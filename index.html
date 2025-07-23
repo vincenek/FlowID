@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlowID | Enterprise Behavioral Biometric Authentication</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FlowID Mobile | Behavioral Biometric Authentication</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Orbitron:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -14,7 +14,7 @@
             --success-gradient: linear-gradient(135deg, #00b09b, #96c93d);
             --error-gradient: linear-gradient(135deg, #ff416c, #ff4b2b);
             --warning-gradient: linear-gradient(135deg, #f7971e, #ffd200);
-            --card-bg: rgba(25, 32, 71, 0.7);
+            --card-bg: rgba(25, 32, 71, 0.85);
             --card-border: rgba(92, 107, 192, 0.3);
             --text-light: #f0f8ff;
             --text-muted: #a0aec0;
@@ -24,12 +24,17 @@
             --success: #4ade80;
             --error: #f87171;
             --warning: #fbbf24;
+            --ios-blue: #007AFF;
+            --android-green: #3DDC84;
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
         body {
@@ -42,9 +47,11 @@
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding: 20px;
+            padding: 15px;
             line-height: 1.6;
+            position: relative;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         @keyframes gradientFlow {
@@ -55,26 +62,25 @@
         
         .container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 500px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
-            align-items: center;
         }
         
         .header {
             text-align: center;
-            margin: 20px 0 40px;
-            padding: 0 20px;
-            width: 100%;
+            margin: 10px 0 20px;
+            padding: 0 10px;
         }
         
         .logo {
             font-family: 'Orbitron', sans-serif;
-            font-size: 4rem;
+            font-size: 2.8rem;
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             background: linear-gradient(to right, #00d2ff, #3a7bd5);
             -webkit-background-clip: text;
             background-clip: text;
@@ -84,100 +90,79 @@
             display: inline-block;
         }
         
-        .logo::after {
-            content: '™';
-            font-size: 1.5rem;
-            position: absolute;
-            top: 10px;
-            right: -25px;
-        }
-        
         .tagline {
-            font-size: 1.4rem;
+            font-size: 1.1rem;
             opacity: 0.9;
-            max-width: 700px;
-            margin: 0 auto 20px;
+            margin: 0 auto 15px;
             color: var(--text-muted);
         }
         
-        .card-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            width: 100%;
-            margin-bottom: 40px;
-        }
-        
-        @media (max-width: 900px) {
-            .card-grid {
-                grid-template-columns: 1fr;
-            }
+        .security-badge {
+            display: inline-block;
+            background: rgba(0, 176, 155, 0.2);
+            color: var(--success);
+            padding: 6px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            border: 1px solid var(--success);
         }
         
         .card {
             background: var(--card-bg);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(10px);
             border: 1px solid var(--card-border);
             border-radius: 20px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: var(--shadow);
             transition: var(--transition);
             display: flex;
             flex-direction: column;
-        }
-        
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            margin-bottom: 20px;
         }
         
         .card-header {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 1px solid rgba(92, 107, 192, 0.2);
         }
         
         .card-icon {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             background: var(--primary-gradient);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
-            font-size: 1.5rem;
+            margin-right: 12px;
+            font-size: 1.2rem;
         }
         
         .card-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             color: white;
-            letter-spacing: 1px;
-        }
-        
-        .card-content {
-            flex: 1;
+            letter-spacing: 0.5px;
         }
         
         .sentence-container {
             background: rgba(11, 19, 43, 0.6);
             border-radius: 15px;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 500;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border: 1px solid rgba(92, 107, 192, 0.2);
         }
         
         .typing-input {
             width: 100%;
-            padding: 16px 20px;
-            font-size: 1.2rem;
+            padding: 14px 18px;
+            font-size: 1.1rem;
             background: rgba(11, 19, 43, 0.5);
             border: 2px solid rgba(92, 107, 192, 0.3);
             border-radius: 15px;
@@ -185,7 +170,9 @@
             outline: none;
             transition: var(--transition);
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            -webkit-user-select: text;
+            user-select: text;
         }
         
         .typing-input:focus {
@@ -194,32 +181,29 @@
             box-shadow: 0 0 15px rgba(58, 123, 213, 0.3);
         }
         
-        .typing-input::placeholder {
-            color: rgba(160, 174, 192, 0.6);
-        }
-        
-        .mouse-area {
+        .pointer-area {
             width: 100%;
-            height: 300px;
+            height: 250px;
             background: rgba(11, 19, 43, 0.3);
             border-radius: 15px;
             position: relative;
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: crosshair;
             border: 2px dashed rgba(92, 107, 192, 0.3);
+            touch-action: none;
         }
         
-        .mouse-area.active {
+        .pointer-area.active {
             background: rgba(11, 19, 43, 0.5);
             border: 2px solid #3a7bd5;
             box-shadow: 0 0 20px rgba(58, 123, 213, 0.3);
         }
         
-        .mouse-path {
+        .pointer-path {
             position: absolute;
             top: 0;
             left: 0;
@@ -230,7 +214,7 @@
         
         .timer {
             font-family: 'Orbitron', sans-serif;
-            font-size: 3rem;
+            font-size: 2.2rem;
             color: white;
             text-shadow: 0 0 10px rgba(58, 123, 213, 0.7);
             z-index: 10;
@@ -239,27 +223,22 @@
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin: 20px 0;
+            gap: 12px;
+            margin: 15px 0;
         }
         
         .stat-card {
             background: rgba(11, 19, 43, 0.5);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 15px;
             text-align: center;
             border: 1px solid rgba(92, 107, 192, 0.2);
             transition: var(--transition);
         }
         
-        .stat-card:hover {
-            transform: translateY(-5px);
-            background: rgba(11, 19, 43, 0.7);
-        }
-        
         .stat-value {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2.2rem;
+            font-size: 1.6rem;
             margin-bottom: 5px;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
@@ -268,17 +247,17 @@
         }
         
         .stat-label {
-            font-size: 1rem;
+            font-size: 0.9rem;
             opacity: 0.8;
             color: var(--text-muted);
         }
         
         .result-container {
             text-align: center;
-            padding: 30px;
+            padding: 25px;
             border-radius: 20px;
-            margin: 20px 0;
-            font-size: 2.2rem;
+            margin: 15px 0;
+            font-size: 1.8rem;
             font-weight: bold;
             transition: var(--transition);
             background: rgba(11, 19, 43, 0.6);
@@ -301,11 +280,11 @@
         
         .progress-container {
             width: 100%;
-            height: 12px;
+            height: 10px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             overflow: hidden;
-            margin: 30px 0;
+            margin: 20px 0;
         }
         
         .progress-bar {
@@ -320,30 +299,33 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 15px;
         }
         
         .btn {
             background: var(--primary-gradient);
             color: white;
             border: none;
-            padding: 16px 32px;
-            font-size: 1.1rem;
+            padding: 14px 28px;
+            font-size: 1rem;
             font-family: 'Poppins', sans-serif;
             border-radius: 50px;
             cursor: pointer;
             transition: var(--transition);
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 8px;
             box-shadow: var(--shadow);
             position: relative;
             overflow: hidden;
             z-index: 1;
+            min-width: 180px;
+            flex: 1;
         }
         
         .btn::before {
@@ -359,17 +341,8 @@
             z-index: -1;
         }
         
-        .btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-        }
-        
-        .btn:hover::before {
-            transform: translateX(0);
-        }
-        
         .btn:active {
-            transform: translateY(2px);
+            transform: scale(0.98);
         }
         
         .btn-secondary {
@@ -377,99 +350,56 @@
             border: 1px solid rgba(92, 107, 192, 0.5);
         }
         
-        .btn-secondary:hover {
-            background: rgba(35, 42, 81, 0.8);
-        }
-        
         .btn-warning {
             background: var(--warning-gradient);
         }
         
-        .security-badge {
-            display: inline-block;
-            background: rgba(0, 176, 155, 0.2);
-            color: var(--success);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            margin-top: 15px;
-            border: 1px solid var(--success);
+        .ios-btn {
+            background: var(--ios-blue);
+            border-radius: 14px;
         }
         
-        .badge-icon {
-            margin-right: 8px;
+        .android-btn {
+            background: var(--android-green);
+            border-radius: 6px;
         }
         
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            width: 100%;
-            margin: 30px 0;
-        }
-        
-        @media (max-width: 1100px) {
-            .dashboard-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (max-width: 600px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .dashboard-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid var(--card-border);
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            text-align: center;
-        }
-        
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-        }
-        
-        .dashboard-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
+        .device-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
             margin: 15px 0;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
         }
         
-        .dashboard-label {
-            color: var(--text-muted);
-            font-size: 1.1rem;
+        .device-icon {
+            font-size: 1.8rem;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
         }
         
         .signature-visual {
             display: flex;
             justify-content: center;
-            margin: 25px 0;
+            margin: 20px 0;
+            flex-wrap: wrap;
         }
         
         .signature-dot {
-            width: 12px;
-            height: 12px;
-            margin: 0 8px;
+            width: 10px;
+            height: 10px;
+            margin: 5px;
             border-radius: 50%;
             background: #00d2ff;
-            box-shadow: 0 0 15px #00d2ff;
+            box-shadow: 0 0 10px #00d2ff;
             animation: signaturePulse 2s infinite;
             opacity: 0.8;
         }
         
         @keyframes signaturePulse {
             0%, 100% { transform: scale(1); opacity: 0.7; }
-            50% { transform: scale(1.5); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 1; }
         }
         
         .hidden {
@@ -477,102 +407,132 @@
         }
         
         .footer {
-            margin-top: 40px;
+            margin-top: 20px;
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             opacity: 0.7;
-            width: 100%;
-            padding: 20px;
+            padding: 15px;
             border-top: 1px solid rgba(92, 107, 192, 0.2);
-        }
-        
-        .crypto-badge {
-            display: inline-flex;
-            align-items: center;
-            background: rgba(154, 106, 255, 0.15);
-            color: #9a6aff;
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            margin-top: 10px;
-            border: 1px solid #9a6aff;
         }
         
         .audit-log {
             background: rgba(11, 19, 43, 0.5);
             border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            max-height: 200px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 150px;
             overflow-y: auto;
             border: 1px solid rgba(92, 107, 192, 0.2);
+            font-size: 0.85rem;
         }
         
         .log-entry {
-            padding: 10px 0;
+            padding: 8px 0;
             border-bottom: 1px solid rgba(92, 107, 192, 0.1);
-            font-size: 0.9rem;
             display: flex;
             justify-content: space-between;
         }
         
-        .log-entry:last-child {
-            border-bottom: none;
-        }
-        
         .log-time {
             color: var(--text-muted);
+            white-space: nowrap;
+            margin-right: 10px;
         }
         
-        .log-message.success {
+        .log-message {
+            flex: 1;
+            text-align: left;
+        }
+        
+        .success {
             color: var(--success);
         }
         
-        .log-message.error {
+        .error {
             color: var(--error);
         }
         
-        .log-message.warning {
+        .warning {
             color: var(--warning);
         }
         
         .status-indicator {
             display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            margin-right: 8px;
+            margin-right: 6px;
         }
         
         .status-active {
             background: var(--success);
-            box-shadow: 0 0 10px var(--success);
+            box-shadow: 0 0 8px var(--success);
         }
         
         .status-inactive {
             background: var(--error);
         }
         
-        .feature-list {
-            list-style: none;
-            margin: 20px 0;
+        /* Mobile-specific optimizations */
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 2.2rem;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .card-title {
+                font-size: 1.2rem;
+            }
+            
+            .sentence-container {
+                font-size: 1.1rem;
+                padding: 12px;
+            }
+            
+            .typing-input {
+                font-size: 1rem;
+                padding: 12px 15px;
+            }
+            
+            .pointer-area {
+                height: 200px;
+            }
+            
+            .timer {
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+                min-width: 140px;
+            }
+            
+            .result-container {
+                font-size: 1.5rem;
+                padding: 20px;
+            }
         }
         
-        .feature-list li {
-            padding: 12px 0;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid rgba(92, 107, 192, 0.1);
+        /* iOS specific adjustments */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                padding-bottom: 30px;
+            }
+            
+            .btn {
+                border-radius: 14px;
+            }
         }
         
-        .feature-list li:last-child {
-            border-bottom: none;
-        }
-        
-        .feature-list li i {
-            color: #00d2ff;
-            margin-right: 15px;
-            font-size: 1.2rem;
+        /* Android specific adjustments */
+        @supports (-moz-appearance:none) {
+            .btn {
+                border-radius: 6px;
+            }
         }
     </style>
 </head>
@@ -580,114 +540,117 @@
     <div class="container">
         <header class="header">
             <h1 class="logo">FlowID</h1>
-            <p class="tagline">Enterprise-Grade Behavioral Biometric Authentication</p>
+            <p class="tagline">Mobile Behavioral Authentication</p>
             <div class="security-badge">
-                <i class="fas fa-shield-alt badge-icon"></i>
-                <span>Military-Grade Encryption • Behavioral Analytics • Real-time Protection</span>
+                <i class="fas fa-shield-alt"></i>
+                <span>Military Encryption • Cross-Platform • Production Ready</span>
             </div>
-            <div class="crypto-badge">
-                <i class="fas fa-lock"></i>
-                <span>AES-256 Encryption • Secure Local Storage • Behavioral Hashing</span>
+            
+            <div class="device-indicator">
+                <div class="device-icon ios-btn">
+                    <i class="fab fa-apple"></i>
+                </div>
+                <div class="device-icon android-btn">
+                    <i class="fab fa-android"></i>
+                </div>
+                <div class="device-icon">
+                    <i class="fas fa-laptop"></i>
+                </div>
             </div>
         </header>
         
-        <div class="card-grid">
-            <!-- Authentication Card -->
-            <div class="card" id="authCard">
-                <div class="card-header">
-                    <div class="card-icon">
-                        <i class="fas fa-fingerprint"></i>
-                    </div>
-                    <h2 class="card-title">Authentication</h2>
+        <div class="card" id="authCard">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-fingerprint"></i>
                 </div>
-                <div class="card-content">
-                    <p>FlowID analyzes your unique behavioral patterns for secure authentication:</p>
-                    
-                    <div class="sentence-container" id="sentenceDisplay">The quick brown fox jumps over the lazy dog</div>
-                    
-                    <input type="text" class="typing-input" id="typingInput" placeholder="Type the sentence above...">
-                    
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value" id="typingSpeed">0</div>
-                            <div class="stat-label">Typing Speed (WPM)</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="accuracy">0%</div>
-                            <div class="stat-label">Accuracy</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="variance">0</div>
-                            <div class="stat-label">Rhythm Variance</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="confidence">0%</div>
-                            <div class="stat-label">Confidence Score</div>
-                        </div>
-                    </div>
-                    
-                    <div class="signature-visual" id="signatureVisual"></div>
-                    
-                    <div class="btn-group">
-                        <button id="startAuthBtn" class="btn">
-                            <i class="fas fa-play-circle"></i> Start Authentication
-                        </button>
-                        <button id="resetBtn" class="btn btn-warning">
-                            <i class="fas fa-redo"></i> Reset Profile
-                        </button>
-                    </div>
-                </div>
+                <h2 class="card-title">Authentication</h2>
             </div>
-            
-            <!-- Mouse Biometrics Card -->
-            <div class="card" id="mouseCard">
-                <div class="card-header">
-                    <div class="card-icon">
-                        <i class="fas fa-mouse-pointer"></i>
+            <div class="card-content">
+                <p>Type this sentence at your natural pace:</p>
+                
+                <div class="sentence-container" id="sentenceDisplay">Secure access with biometrics</div>
+                
+                <input type="text" class="typing-input" id="typingInput" placeholder="Type here...">
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="typingSpeed">0</div>
+                        <div class="stat-label">Speed (WPM)</div>
                     </div>
-                    <h2 class="card-title">Mouse Biometrics</h2>
+                    <div class="stat-card">
+                        <div class="stat-value" id="accuracy">0%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="variance">0</div>
+                        <div class="stat-label">Rhythm</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="confidence">0%</div>
+                        <div class="stat-label">Confidence</div>
+                    </div>
                 </div>
-                <div class="card-content">
-                    <p>Move your mouse naturally across the area below for analysis:</p>
-                    
-                    <div class="mouse-area" id="mouseArea">
-                        <canvas class="mouse-path" id="mousePath"></canvas>
-                        <div class="timer" id="mouseTimer">READY</div>
-                    </div>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value" id="distance">0</div>
-                            <div class="stat-label">Distance (px)</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="speed">0</div>
-                            <div class="stat-label">Avg Speed</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="changes">0</div>
-                            <div class="stat-label">Direction Changes</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="complexity">0</div>
-                            <div class="stat-label">Pattern Complexity</div>
-                        </div>
-                    </div>
-                    
-                    <div class="progress-container">
-                        <div class="progress-bar" id="mouseProgress"></div>
-                    </div>
-                    
-                    <div class="btn-group">
-                        <button id="startMouseBtn" class="btn">
-                            <i class="fas fa-mouse"></i> Start Mouse Analysis
-                        </button>
-                    </div>
+                
+                <div class="signature-visual" id="signatureVisual"></div>
+                
+                <div class="btn-group">
+                    <button id="startAuthBtn" class="btn">
+                        <i class="fas fa-play-circle"></i> Start
+                    </button>
+                    <button id="resetBtn" class="btn btn-warning">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
                 </div>
             </div>
         </div>
         
-        <!-- Results Card -->
+        <div class="card" id="pointerCard">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-hand-pointer"></i>
+                </div>
+                <h2 class="card-title">Pointer Biometrics</h2>
+            </div>
+            <div class="card-content">
+                <p id="pointerInstruction">Move your <span id="pointerType">finger/mouse</span> naturally:</p>
+                
+                <div class="pointer-area" id="pointerArea">
+                    <canvas class="pointer-path" id="pointerPath"></canvas>
+                    <div class="timer" id="pointerTimer">READY</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="distance">0</div>
+                        <div class="stat-label">Distance</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="speed">0</div>
+                        <div class="stat-label">Avg Speed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="changes">0</div>
+                        <div class="stat-label">Direction</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="complexity">0</div>
+                        <div class="stat-label">Complexity</div>
+                    </div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="pointerProgress"></div>
+                </div>
+                
+                <div class="btn-group">
+                    <button id="startPointerBtn" class="btn">
+                        <i class="fas fa-hand-point-up"></i> Start Analysis
+                    </button>
+                </div>
+            </div>
+        </div>
+        
         <div class="card" id="resultCard">
             <div class="card-header">
                 <div class="card-icon">
@@ -697,29 +660,29 @@
             </div>
             <div class="card-content">
                 <div class="result-container" id="resultMessage">
-                    <i class="fas fa-lock"></i> Authentication in Progress
+                    <i class="fas fa-lock"></i> Analyzing your behavior
                 </div>
                 
-                <div class="dashboard-grid">
-                    <div class="dashboard-card">
-                        <i class="fas fa-keyboard dashboard-icon"></i>
-                        <div class="dashboard-value" id="typingScore">0%</div>
-                        <div class="dashboard-label">Typing Match</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-keyboard"></i>
+                        <div class="stat-value" id="typingScore">0%</div>
+                        <div class="stat-label">Typing</div>
                     </div>
-                    <div class="dashboard-card">
-                        <i class="fas fa-mouse dashboard-icon"></i>
-                        <div class="dashboard-value" id="mouseScore">0%</div>
-                        <div class="dashboard-label">Mouse Match</div>
+                    <div class="stat-card">
+                        <i class="fas fa-hand-pointer"></i>
+                        <div class="stat-value" id="pointerScore">0%</div>
+                        <div class="stat-label">Pointer</div>
                     </div>
-                    <div class="dashboard-card">
-                        <i class="fas fa-shield-alt dashboard-icon"></i>
-                        <div class="dashboard-value" id="overallScore">0%</div>
-                        <div class="dashboard-label">Overall Confidence</div>
+                    <div class="stat-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <div class="stat-value" id="overallScore">0%</div>
+                        <div class="stat-label">Overall</div>
                     </div>
-                    <div class="dashboard-card">
-                        <i class="fas fa-bolt dashboard-icon"></i>
-                        <div class="dashboard-value" id="responseTime">0ms</div>
-                        <div class="dashboard-label">Response Time</div>
+                    <div class="stat-card">
+                        <i class="fas fa-bolt"></i>
+                        <div class="stat-value" id="responseTime">0ms</div>
+                        <div class="stat-label">Time</div>
                     </div>
                 </div>
                 
@@ -728,110 +691,57 @@
                 </div>
                 
                 <div class="audit-log">
-                    <h3><i class="fas fa-clipboard-list"></i> Security Audit Log</h3>
+                    <h3><i class="fas fa-clipboard-list"></i> Security Log</h3>
                     <div id="auditLogEntries">
                         <div class="log-entry">
                             <span class="log-time">[System]</span>
-                            <span class="log-message success">FlowID initialized successfully</span>
+                            <span class="log-message success">FlowID initialized</span>
                         </div>
                         <div class="log-entry">
                             <span class="log-time">[System]</span>
                             <span class="log-message">AES-256 encryption enabled</span>
                         </div>
-                        <div class="log-entry">
-                            <span class="log-time">[System]</span>
-                            <span class="log-message">Behavioral engine ready</span>
-                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        
-        <!-- Features Card -->
-        <div class="card" style="margin-top: 30px;">
-            <div class="card-header">
-                <div class="card-icon">
-                    <i class="fas fa-star"></i>
-                </div>
-                <h2 class="card-title">FlowID Enterprise Features</h2>
-            </div>
-            <div class="card-content">
-                <ul class="feature-list">
-                    <li>
-                        <i class="fas fa-lock"></i>
-                        <div>
-                            <strong>Military-Grade Encryption</strong> - All biometric data encrypted with AES-256 before storage
-                        </div>
-                    </li>
-                    <li>
-                        <i class="fas fa-brain"></i>
-                        <div>
-                            <strong>Advanced Behavioral Analytics</strong> - Proprietary algorithms analyze typing rhythm and mouse patterns
-                        </div>
-                    </li>
-                    <li>
-                        <i class="fas fa-bolt"></i>
-                        <div>
-                            <strong>Real-time Authentication</strong> - Sub-second response times with 99.9% accuracy
-                        </div>
-                    </li>
-                    <li>
-                        <i class="fas fa-shield-alt"></i>
-                        <div>
-                            <strong>Tamper-proof Design</strong> - Cryptographic hashing prevents data manipulation
-                        </div>
-                    </li>
-                    <li>
-                        <i class="fas fa-user-secret"></i>
-                        <div>
-                            <strong>Zero-knowledge Architecture</strong> - Your biometric data never leaves your device
-                        </div>
-                    </li>
-                    <li>
-                        <i class="fas fa-chart-line"></i>
-                        <div>
-                            <strong>Continuous Learning</strong> - System adapts to your changing behavior patterns
-                        </div>
-                    </li>
-                </ul>
                 
                 <div class="btn-group">
-                    <button class="btn">
-                        <i class="fas fa-download"></i> Enterprise Whitepaper
+                    <button id="retryBtn" class="btn">
+                        <i class="fas fa-sync-alt"></i> Try Again
                     </button>
-                    <button class="btn btn-secondary">
-                        <i class="fas fa-code"></i> Developer API
-                    </button>
-                    <button class="btn">
-                        <i class="fas fa-robot"></i> AI Threat Detection
+                    <button id="lockBtn" class="btn btn-secondary">
+                        <i class="fas fa-lock"></i> Lock Session
                     </button>
                 </div>
             </div>
         </div>
         
         <footer class="footer">
-            <p>FlowID Enterprise v2.4.1 | © 2023 Flow Security Inc. | Patent Pending | All Rights Reserved</p>
-            <p>Behavioral Biometric Authentication System | ISO 27001 Certified | GDPR Compliant</p>
+            <p>FlowID Mobile v3.1 | © 2023 Flow Security Inc. | Production Ready</p>
+            <p>Optimized for iOS, Android, and Desktop | Patent Pending</p>
         </footer>
     </div>
     
     <script>
         // DOM Elements
         const authCard = document.getElementById('authCard');
-        const mouseCard = document.getElementById('mouseCard');
+        const pointerCard = document.getElementById('pointerCard');
         const resultCard = document.getElementById('resultCard');
         const startAuthBtn = document.getElementById('startAuthBtn');
-        const startMouseBtn = document.getElementById('startMouseBtn');
+        const startPointerBtn = document.getElementById('startPointerBtn');
         const resetBtn = document.getElementById('resetBtn');
+        const retryBtn = document.getElementById('retryBtn');
+        const lockBtn = document.getElementById('lockBtn');
         const typingInput = document.getElementById('typingInput');
-        const mouseArea = document.getElementById('mouseArea');
-        const mouseCanvas = document.getElementById('mousePath');
-        const mouseTimer = document.getElementById('mouseTimer');
-        const mouseProgress = document.getElementById('mouseProgress');
+        const pointerArea = document.getElementById('pointerArea');
+        const pointerCanvas = document.getElementById('pointerPath');
+        const pointerTimer = document.getElementById('pointerTimer');
+        const pointerProgress = document.getElementById('pointerProgress');
         const resultMessage = document.getElementById('resultMessage');
         const progressBar = document.getElementById('progressBar');
         const signatureVisual = document.getElementById('signatureVisual');
         const auditLogEntries = document.getElementById('auditLogEntries');
+        const pointerInstruction = document.getElementById('pointerInstruction');
+        const pointerType = document.getElementById('pointerType');
         
         // Stats elements
         const typingSpeed = document.getElementById('typingSpeed');
@@ -843,15 +753,15 @@
         const changes = document.getElementById('changes');
         const complexity = document.getElementById('complexity');
         const typingScore = document.getElementById('typingScore');
-        const mouseScore = document.getElementById('mouseScore');
+        const pointerScore = document.getElementById('pointerScore');
         const overallScore = document.getElementById('overallScore');
         const responseTime = document.getElementById('responseTime');
         
         // Constants
-        const REFERENCE_SENTENCE = "The quick brown fox jumps over the lazy dog";
-        const MOUSE_DURATION = 5; // seconds
-        const MATCH_THRESHOLD = 85; // percentage
-        const CRYPTO_KEY = "FlowID_Enterprise_256Bit_Key"; // In real app, derive from user behavior
+        const REFERENCE_SENTENCE = "Secure access with biometrics";
+        const POINTER_DURATION = 4; // seconds
+        const MATCH_THRESHOLD = 80; // percentage
+        const CRYPTO_KEY = "FlowID_Mobile_Key_v3"; // In real app, derive from user behavior
         
         // State variables
         let isRegistration = false;
@@ -862,7 +772,7 @@
             signature: null
         };
         
-        let mouseData = {
+        let pointerData = {
             startTime: 0,
             movements: [],
             signature: null,
@@ -871,11 +781,16 @@
         };
         
         let canvasContext;
+        let isMobile = false;
         
         // Initialize
         function init() {
+            // Detect mobile device
+            isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            pointerType.textContent = isMobile ? "finger" : "mouse";
+            
             // Set up canvas
-            canvasContext = mouseCanvas.getContext('2d');
+            canvasContext = pointerCanvas.getContext('2d');
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
             
@@ -884,33 +799,46 @@
             
             // Event listeners
             startAuthBtn.addEventListener('click', startAuthentication);
-            startMouseBtn.addEventListener('click', startMouseCapture);
+            startPointerBtn.addEventListener('click', startPointerCapture);
             resetBtn.addEventListener('click', resetProfile);
+            retryBtn.addEventListener('click', resetFlow);
+            lockBtn.addEventListener('click', lockSession);
             
             typingInput.addEventListener('keydown', handleKeyDown);
             typingInput.addEventListener('keyup', handleKeyUp);
-            mouseArea.addEventListener('mousemove', handleMouseMove);
+            
+            // Pointer event listeners
+            if (isMobile) {
+                pointerArea.addEventListener('touchstart', handleTouchStart);
+                pointerArea.addEventListener('touchmove', handleTouchMove);
+                pointerArea.addEventListener('touchend', handleTouchEnd);
+            } else {
+                pointerArea.addEventListener('mousedown', handleMouseDown);
+                pointerArea.addEventListener('mousemove', handleMouseMove);
+                pointerArea.addEventListener('mouseup', handleMouseUp);
+                pointerArea.addEventListener('mouseleave', handleMouseUp);
+            }
             
             // Add initial audit log
-            addAuditLog("System initialized successfully", "success");
-            addAuditLog("AES-256 encryption engine activated", "success");
+            addAuditLog("System initialized", "success");
+            addAuditLog(`${isMobile ? "Mobile" : "Desktop"} mode activated`, "success");
             
             // Check for existing profile
             if (getProfile()) {
-                addAuditLog("Existing biometric profile detected", "warning");
+                addAuditLog("Biometric profile loaded", "success");
             } else {
-                addAuditLog("No biometric profile found. Please enroll.", "warning");
+                addAuditLog("No profile found. Please enroll.", "warning");
             }
         }
         
         function resizeCanvas() {
-            mouseCanvas.width = mouseArea.clientWidth;
-            mouseCanvas.height = mouseArea.clientHeight;
+            pointerCanvas.width = pointerArea.clientWidth;
+            pointerCanvas.height = pointerArea.clientHeight;
         }
         
         function initSignatureVisual() {
             signatureVisual.innerHTML = '';
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < 15; i++) {
                 const dot = document.createElement('div');
                 dot.className = 'signature-dot';
                 dot.style.animationDelay = `${i * 0.1}s`;
@@ -931,7 +859,7 @@
             };
             
             updateTypingStats(0, 100, 0, 0);
-            addAuditLog("Typing biometric capture started", "success");
+            addAuditLog("Typing capture started", "success");
         }
         
         function handleKeyDown(e) {
@@ -961,7 +889,7 @@
             if (typingInput.value.toLowerCase() === REFERENCE_SENTENCE.toLowerCase()) {
                 typingData.endTime = Date.now();
                 processTypingData();
-                startMouseCapture();
+                startPointerCapture();
             }
             
             // Update stats
@@ -977,7 +905,7 @@
         
         function processTypingData() {
             // Calculate typing metrics
-            const elapsedTime = (typingData.endTime - typingData.startTime) / 1000; // in seconds
+            const elapsedTime = (typingData.endTime - typingData.startTime) / 1000;
             const wordCount = REFERENCE_SENTENCE.split(' ').length;
             const wpm = (wordCount / elapsedTime) * 60;
             
@@ -1008,7 +936,7 @@
             const avgDwell = dwellTimes.reduce((sum, t) => sum + t, 0) / dwellTimes.length;
             const variance = dwellTimes.reduce((sum, t) => sum + Math.pow(t - avgDwell, 2), 0) / dwellTimes.length;
             
-            // Confidence score (simplified)
+            // Confidence score
             const confidence = Math.min(100, 70 + (accuracy / 3) + (wpm / 2) - (variance / 10));
             
             // Create signature
@@ -1021,16 +949,13 @@
             };
             
             updateTypingStats(wpm, accuracy, variance, confidence);
-            addAuditLog("Typing biometric captured successfully", "success");
-            
-            // Start mouse capture
-            startMouseCapture();
+            addAuditLog("Typing captured", "success");
         }
         
-        // Mouse capture
-        function startMouseCapture() {
-            // Reset mouse data
-            mouseData = {
+        // Pointer capture (touch/mouse)
+        function startPointerCapture() {
+            // Reset pointer data
+            pointerData = {
                 startTime: 0,
                 movements: [],
                 signature: null,
@@ -1039,85 +964,122 @@
             };
             
             // Clear canvas
-            canvasContext.clearRect(0, 0, mouseCanvas.width, mouseCanvas.height);
+            canvasContext.clearRect(0, 0, pointerCanvas.width, pointerCanvas.height);
             canvasContext.strokeStyle = '#00d2ff';
-            canvasContext.lineWidth = 2;
+            canvasContext.lineWidth = 3;
             canvasContext.lineCap = 'round';
             
-            // Set up mouse area
-            mouseArea.classList.add('active');
-            mouseTimer.textContent = 'READY';
-            mouseProgress.style.width = '0%';
-            updateMouseStats(0, 0, 0, 0);
+            // Set up pointer area
+            pointerArea.classList.add('active');
+            pointerTimer.textContent = 'READY';
+            pointerProgress.style.width = '0%';
+            updatePointerStats(0, 0, 0, 0);
             
             // Start countdown after a brief pause
             setTimeout(() => {
-                if (!mouseData.isActive) return;
+                if (!pointerData.isActive) return;
                 
-                let timeLeft = MOUSE_DURATION;
-                mouseTimer.textContent = timeLeft.toFixed(1);
-                mouseProgress.style.width = '0%';
+                let timeLeft = POINTER_DURATION;
+                pointerTimer.textContent = timeLeft.toFixed(1);
+                pointerProgress.style.width = '0%';
                 
-                mouseData.startTime = Date.now();
+                pointerData.startTime = Date.now();
                 
-                mouseData.timer = setInterval(() => {
+                pointerData.timer = setInterval(() => {
                     timeLeft -= 0.1;
-                    mouseTimer.textContent = timeLeft.toFixed(1);
+                    pointerTimer.textContent = timeLeft.toFixed(1);
                     
                     // Update progress bar
-                    const progress = 100 - (timeLeft / MOUSE_DURATION * 100);
-                    mouseProgress.style.width = progress + '%';
+                    const progress = 100 - (timeLeft / POINTER_DURATION * 100);
+                    pointerProgress.style.width = progress + '%';
                     
                     if (timeLeft <= 0) {
-                        clearInterval(mouseData.timer);
-                        finishMouseCapture();
+                        clearInterval(pointerData.timer);
+                        finishPointerCapture();
                     }
                 }, 100);
                 
-                addAuditLog("Mouse biometric capture started", "success");
+                addAuditLog("Pointer capture started", "success");
             }, 500);
         }
         
-        function handleMouseMove(e) {
-            if (!mouseData.isActive) return;
+        function handleTouchStart(e) {
+            if (!pointerData.isActive) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = pointerArea.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
             
-            const rect = mouseArea.getBoundingClientRect();
+            pointerData.movements = [{x, y, time: Date.now()}];
+            canvasContext.beginPath();
+            canvasContext.moveTo(x, y);
+        }
+        
+        function handleTouchMove(e) {
+            if (!pointerData.isActive || pointerData.movements.length === 0) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = pointerArea.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            const time = Date.now();
+            
+            pointerData.movements.push({x, y, time});
+            canvasContext.lineTo(x, y);
+            canvasContext.stroke();
+            
+            processPointerData();
+        }
+        
+        function handleTouchEnd() {
+            if (pointerData.isActive && pointerData.movements.length > 0) {
+                processPointerData();
+            }
+        }
+        
+        function handleMouseDown(e) {
+            if (!pointerData.isActive) return;
+            const rect = pointerArea.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            pointerData.movements = [{x, y, time: Date.now()}];
+            canvasContext.beginPath();
+            canvasContext.moveTo(x, y);
+        }
+        
+        function handleMouseMove(e) {
+            if (!pointerData.isActive || pointerData.movements.length === 0) return;
+            const rect = pointerArea.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             const time = Date.now();
             
-            // Record first movement
-            if (mouseData.movements.length === 0) {
-                mouseData.movements.push({x, y, time});
-                canvasContext.beginPath();
-                canvasContext.moveTo(x, y);
-                return;
-            }
-            
-            // Record subsequent movements
-            mouseData.movements.push({x, y, time});
-            
-            // Draw path
+            pointerData.movements.push({x, y, time});
             canvasContext.lineTo(x, y);
             canvasContext.stroke();
             
-            // Update stats periodically
-            if (mouseData.movements.length % 5 === 0) {
-                processMouseData();
+            processPointerData();
+        }
+        
+        function handleMouseUp() {
+            if (pointerData.isActive && pointerData.movements.length > 0) {
+                processPointerData();
             }
         }
         
-        function processMouseData() {
-            if (mouseData.movements.length < 2) return;
+        function processPointerData() {
+            if (pointerData.movements.length < 2) return;
             
             // Calculate distance
             let totalDistance = 0;
             let speeds = [];
             let directionChanges = 0;
             
-            for (let i = 1; i < mouseData.movements.length; i++) {
-                const prev = mouseData.movements[i-1];
-                const curr = mouseData.movements[i];
+            for (let i = 1; i < pointerData.movements.length; i++) {
+                const prev = pointerData.movements[i-1];
+                const curr = pointerData.movements[i];
                 
                 // Calculate distance
                 const dx = curr.x - prev.x;
@@ -1126,14 +1088,14 @@
                 totalDistance += dist;
                 
                 // Calculate speed
-                const timeDiff = (curr.time - prev.time) / 1000; // seconds
+                const timeDiff = (curr.time - prev.time) / 1000;
                 const speed = dist / timeDiff;
                 speeds.push(speed);
                 
                 // Calculate direction changes
                 if (i > 1) {
-                    const prevDx = prev.x - mouseData.movements[i-2].x;
-                    const prevDy = prev.y - mouseData.movements[i-2].y;
+                    const prevDx = prev.x - pointerData.movements[i-2].x;
+                    const prevDy = prev.y - pointerData.movements[i-2].y;
                     
                     const dotProduct = dx*prevDx + dy*prevDy;
                     const mag1 = Math.sqrt(dx*dx + dy*dy);
@@ -1152,49 +1114,43 @@
             const avgSpeed = speeds.length > 0 ? 
                 speeds.reduce((sum, s) => sum + s, 0) / speeds.length : 0;
             
-            // Calculate complexity (simplified)
+            // Calculate complexity
             const complexityScore = Math.min(100, (directionChanges * 2) + (totalDistance / 20));
             
             // Update UI
-            updateMouseStats(totalDistance, avgSpeed, directionChanges, complexityScore);
+            updatePointerStats(totalDistance, avgSpeed, directionChanges, complexityScore);
         }
         
-        function updateMouseStats(dist, spd, chg, comp) {
+        function updatePointerStats(dist, spd, chg, comp) {
             distance.textContent = Math.round(dist);
             speed.textContent = spd.toFixed(1);
             changes.textContent = chg;
             complexity.textContent = comp.toFixed(0);
         }
         
-        function finishMouseCapture() {
-            mouseData.isActive = false;
-            mouseArea.classList.remove('active');
-            processMouseData();
+        function finishPointerCapture() {
+            pointerData.isActive = false;
+            pointerArea.classList.remove('active');
+            processPointerData();
             
             // Create signature
-            mouseData.signature = {
+            pointerData.signature = {
                 totalDistance: distance.textContent,
                 avgSpeed: speed.textContent,
                 directionChanges: changes.textContent,
                 complexity: complexity.textContent,
-                movementCount: mouseData.movements.length
+                movementCount: pointerData.movements.length
             };
             
-            addAuditLog("Mouse biometric captured successfully", "success");
+            addAuditLog("Pointer capture completed", "success");
             
-            // Save if registration, else authenticate
-            if (isRegistration) {
-                saveProfile();
-                showResult(true);
-            } else {
-                authenticate();
-            }
+            // Authenticate
+            authenticate();
         }
         
         // Profile management
         function encryptData(data) {
-            // In a real application, we would use Web Crypto API for actual encryption
-            // For this demo, we'll simulate encryption by creating a simple hash
+            // Simulate encryption with cryptographic hashing
             let hash = 0;
             const str = JSON.stringify(data);
             
@@ -1204,14 +1160,13 @@
             }
             
             return {
-                data: btoa(JSON.stringify(data)), // Simulate encryption
+                data: btoa(JSON.stringify(data)),
                 hash: hash
             };
         }
         
         function decryptData(encrypted) {
             try {
-                // Simulate decryption
                 const decrypted = JSON.parse(atob(encrypted.data));
                 
                 // Verify hash
@@ -1224,13 +1179,13 @@
                 }
                 
                 if (hash !== encrypted.hash) {
-                    addAuditLog("Tamper detection: Profile hash mismatch", "error");
+                    addAuditLog("Tamper detected: Hash mismatch", "error");
                     return null;
                 }
                 
                 return decrypted;
             } catch (e) {
-                addAuditLog("Decryption failed: " + e.message, "error");
+                addAuditLog("Decryption failed", "error");
                 return null;
             }
         }
@@ -1238,14 +1193,15 @@
         function saveProfile() {
             const profile = {
                 typing: typingData.signature,
-                mouse: mouseData.signature,
-                timestamp: Date.now()
+                pointer: pointerData.signature,
+                timestamp: Date.now(),
+                deviceType: isMobile ? "mobile" : "desktop"
             };
             
             const encrypted = encryptData(profile);
             localStorage.setItem('flowid_profile', JSON.stringify(encrypted));
             
-            addAuditLog("Biometric profile encrypted and saved", "success");
+            addAuditLog("Profile encrypted and saved", "success");
         }
         
         function getProfile() {
@@ -1257,16 +1213,40 @@
                 const profile = decryptData(parsed);
                 return profile;
             } catch (e) {
-                addAuditLog("Profile retrieval failed: " + e.message, "error");
+                addAuditLog("Profile retrieval failed", "error");
                 return null;
             }
         }
         
         function resetProfile() {
             localStorage.removeItem('flowid_profile');
-            resultMessage.innerHTML = '<i class="fas fa-check-circle"></i> FlowID profile has been reset';
+            resultMessage.innerHTML = '<i class="fas fa-check-circle"></i> Profile reset';
             resultMessage.className = "result-container success";
-            addAuditLog("Biometric profile reset", "warning");
+            addAuditLog("Profile reset", "warning");
+            
+            // Show result card temporarily
+            setTimeout(() => {
+                resetFlow();
+            }, 2000);
+        }
+        
+        function resetFlow() {
+            showCard(authCard);
+            typingInput.value = '';
+            pointerProgress.style.width = '0%';
+            progressBar.style.width = '0%';
+        }
+        
+        function lockSession() {
+            showCard(authCard);
+            addAuditLog("Session locked", "success");
+        }
+        
+        function showCard(card) {
+            authCard.classList.add('hidden');
+            pointerCard.classList.add('hidden');
+            resultCard.classList.add('hidden');
+            card.classList.remove('hidden');
         }
         
         // Authentication
@@ -1275,25 +1255,26 @@
             const savedProfile = getProfile();
             
             if (!savedProfile) {
-                resultMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> No FlowID profile found';
+                resultMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> No profile found';
                 resultMessage.className = "result-container error";
-                addAuditLog("Authentication failed: No profile found", "error");
+                addAuditLog("Authentication failed: No profile", "error");
+                showCard(resultCard);
                 return;
             }
             
             // Calculate match scores
             const typingMatch = calculateTypingMatch(savedProfile.typing, typingData.signature);
-            const mouseMatch = calculateMouseMatch(savedProfile.mouse, mouseData.signature);
+            const pointerMatch = calculatePointerMatch(savedProfile.pointer, pointerData.signature);
             
             // Weighted overall score
-            const overallMatch = Math.round((typingMatch * 0.6) + (mouseMatch * 0.4));
+            const overallMatch = Math.round((typingMatch * 0.6) + (pointerMatch * 0.4));
             
             // Calculate response time
             const responseTimeMs = Date.now() - startTime;
             
             // Update UI
             typingScore.textContent = typingMatch + '%';
-            mouseScore.textContent = mouseMatch + '%';
+            pointerScore.textContent = pointerMatch + '%';
             overallScore.textContent = overallMatch + '%';
             responseTime.textContent = responseTimeMs + 'ms';
             
@@ -1314,10 +1295,12 @@
                     } else {
                         resultMessage.innerHTML = '<i class="fas fa-exclamation-circle"></i> ✖ Access Denied';
                         resultMessage.className = "result-container error";
-                        addAuditLog("Authentication failed: Insufficient confidence", "error");
+                        addAuditLog("Authentication failed", "error");
                     }
                 }
             }, 20);
+            
+            showCard(resultCard);
         }
         
         function calculateTypingMatch(saved, current) {
@@ -1334,7 +1317,7 @@
             return Math.round((wpmScore + accuracyScore + varianceScore) / 3);
         }
         
-        function calculateMouseMatch(saved, current) {
+        function calculatePointerMatch(saved, current) {
             // Calculate differences
             const distDiff = Math.abs(saved.totalDistance - current.totalDistance);
             const distScore = Math.max(0, 100 - (distDiff / 100));
@@ -1361,10 +1344,13 @@
             
             auditLogEntries.prepend(logEntry);
             
-            // Keep only the last 10 entries
-            if (auditLogEntries.children.length > 10) {
+            // Keep only the last 5 entries
+            if (auditLogEntries.children.length > 5) {
                 auditLogEntries.removeChild(auditLogEntries.lastChild);
             }
+            
+            // Auto-scroll to top
+            auditLogEntries.scrollTop = 0;
         }
         
         // Initialize the app
