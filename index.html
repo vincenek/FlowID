@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowID | Behavioral Biometric Authentication</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6e8efb, #a777e3);
+            --secondary-gradient: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            --success-color: #4ade80;
+            --error-color: #f87171;
+            --text-light: #f3f4f6;
+            --text-dark: #1f2937;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --card-border: rgba(255, 255, 255, 0.2);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: var(--primary-gradient);
+            background-size: 400% 400%;
+            animation: gradientFlow 15s ease infinite;
+            color: var(--text-light);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 0 20px;
+            width: 100%;
+        }
+        
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(to right, #f3ec78, #af4261);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+            50% { text-shadow: 0 0 20px rgba(255,255,255,0.7); }
+            100% { text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+            margin-bottom: 30px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .sentence-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .typing-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            transition: var(--transition);
+            text-align: center;
+        }
+        
+        .typing-input:focus {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .typing-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .mouse-area {
+            width: 100%;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: crosshair;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+        
+        .mouse-area.active {
+            background: rgba(0, 0, 0, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .mouse-path {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .timer {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: white;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            margin: 10px 0;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            flex: 1;
+            margin: 0 5px;
+            transition: var(--transition);
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-3px);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .result {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.8rem;
+            font-weight: bold;
+            transition: var(--transition);
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .success {
+            background: rgba(74, 222, 128, 0.2);
+            color: var(--success-color);
+            border: 2px solid var(--success-color);
+        }
+        
+        .error {
+            background: rgba(248, 113, 113, 0.2);
+            color: var(--error-color);
+            border: 2px solid var(--error-color);
+        }
+        
+        .btn {
+            background: var(--secondary-gradient);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-family: 'Poppins', sans-serif;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin: 10px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(-100%);
+            transition: var(--transition);
+            z-index: -1;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:hover::before {
+            transform: translateX(0);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .signature-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .signature-visual > div {
+            width: 40px;
+            height: 40px;
+            margin: 0 5px;
+            border-radius: 50%;
+            background: var(--secondary-gradient);
+            transform: scale(0);
+            animation: signaturePop 0.5s forwards;
+            opacity: 0.8;
+        }
+        
+        @keyframes signaturePop {
+            to { transform: scale(1); }
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--success-color);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            width: 100%;
+        }
+        
+        @media (max-width: 600px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .sentence-container {
+                font-size: 1.2rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="logo">FlowID</h1>
+            <p class="tagline">Proprietary Behavioral Biometric Authentication System</p>
+        </header>
+        
+        <main>
+            <div class="card" id="welcomeCard">
+                <h2 class="card-title">Secure Authentication</h2>
+                <div class="card-content">
+                    <p>FlowID analyzes your unique behavioral patterns for secure authentication:</p>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li>Typing rhythm analysis</li>
+                        <li>Mouse movement biometrics</li>
+                        <li>Continuous authentication monitoring</li>
+                    </ul>
+                    <p>Your behavioral signature is stored locally and never leaves your device.</p>
+                    <div class="signature-visual">
+                        <div style="animation-delay: 0.1s"></div>
+                        <div style="animation-delay: 0.2s"></div>
+                        <div style="animation-delay: 0.3s"></div>
+                        <div style="animation-delay: 0.4s"></div>
+                        <div style="animation-delay: 0.5s"></div>
+                    </div>
+                    <button id="startBtn" class="btn">Create FlowID Profile</button>
+                    <button id="authBtn" class="btn">Authenticate with FlowID</button>
+                    <button id="resetBtn" class="btn btn-reset">Reset Profile</button>
+                </div>
+            </div>
+            
+            <div class="card hidden" id="typingCard">
+                <h2 class="card-title">Typing Rhythm Analysis</h2>
+                <div class="card-content">
+                    <p>Type the following sentence at your natural pace:</p>
+                    <div class="sentence-container" id="sentenceDisplay">I move like no one else</div>
+                    <input type="text" class="typing-input" id="typingInput" placeholder="Start typing here...">
+                    <div class="stats">
+                        <div class="stat-box">
+                            <div class="stat-value" id="typingSpeed">0</div>
+                            <div class="stat-label">WPM</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="accuracy">0%</div>
+                            <div class="stat-label">Accuracy</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="variance">0</div>
+                            <div class="stat-label">Variance</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card hidden" id="mouseCard">
+                <h2 class="card-title">Mouse Movement Biometrics</h2>
+                <div class="card-content">
+                    <p>Move your mouse naturally across the area below for 5 seconds:</p>
+                    <div class="mouse-area" id="mouseArea">
+                        <canvas class="mouse-path" id="mousePath"></canvas>
+                        <div class="timer" id="mouseTimer">5.0</div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-box">
+                            <div class="stat-value" id="distance">0</div>
+                            <div class="stat-label">Distance (px)</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="speed">0</div>
+                            <div class="stat-label">Avg Speed</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="changes">0</div>
+                            <div class="stat-label">Direction Changes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card hidden" id="resultCard">
+                <h2 class="card-title">Authentication Result</h2>
+                <div class="card-content">
+                    <div class="result" id="resultMessage">Analyzing your behavioral signature...</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-box">
+                            <div class="stat-value" id="typingScore">0%</div>
+                            <div class="stat-label">Typing Match</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="mouseScore">0%</div>
+                            <div class="stat-label">Mouse Match</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="overallScore">0%</div>
+                            <div class="stat-label">Overall</div>
+                        </div>
+                    </div>
+                    <button id="doneBtn" class="btn">Done</button>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>FlowID Authentication System &copy; 2023 | Proprietary Behavioral Biometrics Technology</p>
+        </footer>
+    </div>
+    
+    <script>
+        // DOM Elements
+        const welcomeCard = document.getElementById('welcomeCard');
+        const typingCard = document.getElementById('typingCard');
+        const mouseCard = document.getElementById('mouseCard');
+        const resultCard = document.getElementById('resultCard');
+        const startBtn = document.getElementById('startBtn');
+        const authBtn = document.getElementById('authBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const doneBtn = document.getElementById('doneBtn');
+        const typingInput = document.getElementById('typingInput');
+        const mouseArea = document.getElementById('mouseArea');
+        const mouseCanvas = document.getElementById('mousePath');
+        const mouseTimer = document.getElementById('mouseTimer');
+        const resultMessage = document.getElementById('resultMessage');
+        const progressBar = document.getElementById('progressBar');
+        
+        // Stats elements
+        const typingSpeed = document.getElementById('typingSpeed');
+        const accuracy = document.getElementById('accuracy');
+        const variance = document.getElementById('variance');
+        const distance = document.getElementById('distance');
+        const speed = document.getElementById('speed');
+        const changes = document.getElementById('changes');
+        const typingScore = document.getElementById('typingScore');
+        const mouseScore = document.getElementById('mouseScore');
+        const overallScore = document.getElementById('overallScore');
+        
+        // Constants
+        const REFERENCE_SENTENCE = "I move like no one else";
+        const MOUSE_DURATION = 5; // seconds
+        const MATCH_THRESHOLD = 85; // percentage
+        
+        // State variables
+        let isRegistration = false;
+        let typingData = {
+            startTime: 0,
+            endTime: 0,
+            keyEvents: [],
+            signature: null
+        };
+        
+        let mouseData = {
+            startTime: 0,
+            movements: [],
+            signature: null,
+            timer: null
+        };
+        
+        let canvasContext;
+        
+        // Initialize
+        function init() {
+            // Set up canvas
+            canvasContext = mouseCanvas.getContext('2d');
+            mouseCanvas.width = mouseArea.clientWidth;
+            mouseCanvas.height = mouseArea.clientHeight;
+            
+            // Event listeners
+            startBtn.addEventListener('click', () => {
+                isRegistration = true;
+                showCard(typingCard);
+                startTypingCapture();
+            });
+            
+            authBtn.addEventListener('click', () => {
+                isRegistration = false;
+                showCard(typingCard);
+                startTypingCapture();
+            });
+            
+            resetBtn.addEventListener('click', resetProfile);
+            doneBtn.addEventListener('click', () => showCard(welcomeCard));
+            
+            typingInput.addEventListener('keydown', handleKeyDown);
+            typingInput.addEventListener('keyup', handleKeyUp);
+            mouseArea.addEventListener('mousemove', handleMouseMove);
+        }
+        
+        // Card navigation
+        function showCard(card) {
+            welcomeCard.classList.add('hidden');
+            typingCard.classList.add('hidden');
+            mouseCard.classList.add('hidden');
+            resultCard.classList.add('hidden');
+            card.classList.remove('hidden');
+        }
+        
+        // Typing capture
+        function startTypingCapture() {
+            typingInput.value = '';
+            typingInput.focus();
+            typingData = {
+                startTime: 0,
+                endTime: 0,
+                keyEvents: [],
+                signature: null
+            };
+            
+            updateTypingStats(0, 100, 0);
+        }
+        
+        function handleKeyDown(e) {
+            if (typingData.startTime === 0) {
+                typingData.startTime = Date.now();
+            }
+            
+            // Record keydown event
+            typingData.keyEvents.push({
+                type: 'down',
+                key: e.key,
+                time: Date.now(),
+                timestamp: Date.now() - typingData.startTime
+            });
+        }
+        
+        function handleKeyUp(e) {
+            // Record keyup event
+            typingData.keyEvents.push({
+                type: 'up',
+                key: e.key,
+                time: Date.now(),
+                timestamp: Date.now() - typingData.startTime
+            });
+            
+            // Check if sentence is complete
+            if (typingInput.value.toLowerCase() === REFERENCE_SENTENCE.toLowerCase()) {
+                typingData.endTime = Date.now();
+                processTypingData();
+                showCard(mouseCard);
+                startMouseCapture();
+            }
+            
+            // Update stats
+            updateTypingStats();
+        }
+        
+        function updateTypingStats(wpm = 0, acc = 0, varValue = 0) {
+            typingSpeed.textContent = wpm.toFixed(1);
+            accuracy.textContent = acc.toFixed(0) + '%';
+            variance.textContent = varValue.toFixed(1);
+        }
+        
+        function processTypingData() {
+            // Calculate typing metrics
+            const elapsedTime = (typingData.endTime - typingData.startTime) / 1000; // in seconds
+            const wordCount = REFERENCE_SENTENCE.split(' ').length;
+            const wpm = (wordCount / elapsedTime) * 60;
+            
+            // Calculate accuracy
+            let correctChars = 0;
+            const inputText = typingInput.value;
+            for (let i = 0; i < Math.min(REFERENCE_SENTENCE.length, inputText.length); i++) {
+                if (REFERENCE_SENTENCE[i] === inputText[i]) correctChars++;
+            }
+            const accuracy = (correctChars / REFERENCE_SENTENCE.length) * 100;
+            
+            // Calculate dwell time variance (simplified)
+            let downEvents = typingData.keyEvents.filter(e => e.type === 'down');
+            let dwellTimes = [];
+            
+            for (let downEvent of downEvents) {
+                const key = downEvent.key;
+                const upEvent = typingData.keyEvents.find(e => 
+                    e.type === 'up' && e.key === key && e.time > downEvent.time
+                );
+                
+                if (upEvent) {
+                    dwellTimes.push(upEvent.time - downEvent.time);
+                }
+            }
+            
+            // Calculate variance
+            const avgDwell = dwellTimes.reduce((sum, t) => sum + t, 0) / dwellTimes.length;
+            const variance = dwellTimes.reduce((sum, t) => sum + Math.pow(t - avgDwell, 2), 0) / dwellTimes.length;
+            
+            // Create signature (simplified for demo)
+            typingData.signature = {
+                wpm,
+                accuracy,
+                dwellVariance: variance,
+                eventCount: typingData.keyEvents.length
+            };
+            
+            updateTypingStats(wpm, accuracy, variance);
+            
+            // Save to localStorage if registration
+            if (isRegistration) {
+                saveProfile();
+            }
+        }
+        
+        // Mouse capture
+        function startMouseCapture() {
+            // Reset mouse data
+            mouseData = {
+                startTime: 0,
+                movements: [],
+                signature: null,
+                timer: null
+            };
+            
+            // Clear canvas
+            canvasContext.clearRect(0, 0, mouseCanvas.width, mouseCanvas.height);
+            
+            // Set up mouse area
+            mouseArea.classList.add('active');
+            updateMouseStats(0, 0, 0);
+            
+            // Start countdown
+            let timeLeft = MOUSE_DURATION;
+            mouseTimer.textContent = timeLeft.toFixed(1);
+            
+            mouseData.timer = setInterval(() => {
+                timeLeft -= 0.1;
+                mouseTimer.textContent = timeLeft.toFixed(1);
+                
+                if (timeLeft <= 0) {
+                    clearInterval(mouseData.timer);
+                    finishMouseCapture();
+                }
+            }, 100);
+        }
+        
+        function handleMouseMove(e) {
+            if (!mouseArea.classList.contains('active')) return;
+            
+            const rect = mouseArea.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const time = Date.now();
+            
+            // Record first movement
+            if (mouseData.movements.length === 0) {
+                mouseData.startTime = time;
+                mouseData.movements.push({x, y, time, elapsed: 0});
+                
+                // Start drawing
+                canvasContext.beginPath();
+                canvasContext.moveTo(x, y);
+                canvasContext.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                canvasContext.lineWidth = 2;
+                return;
+            }
+            
+            // Record subsequent movements
+            const elapsed = (time - mouseData.startTime) / 1000;
+            mouseData.movements.push({x, y, time, elapsed});
+            
+            // Draw path
+            canvasContext.lineTo(x, y);
+            canvasContext.stroke();
+            
+            // Update stats periodically
+            if (mouseData.movements.length % 5 === 0) {
+                processMouseData();
+            }
+        }
+        
+        function processMouseData() {
+            if (mouseData.movements.length < 2) return;
+            
+            // Calculate distance
+            let totalDistance = 0;
+            let speeds = [];
+            let directionChanges = 0;
+            
+            for (let i = 1; i < mouseData.movements.length; i++) {
+                const prev = mouseData.movements[i-1];
+                const curr = mouseData.movements[i];
+                
+                // Calculate distance
+                const dx = curr.x - prev.x;
+                const dy = curr.y - prev.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                totalDistance += dist;
+                
+                // Calculate speed
+                const timeDiff = (curr.time - prev.time) / 1000; // seconds
+                const speed = dist / timeDiff;
+                speeds.push(speed);
+                
+                // Calculate direction changes
+                if (i > 1) {
+                    const prevDx = prev.x - mouseData.movements[i-2].x;
+                    const prevDy = prev.y - mouseData.movements[i-2].y;
+                    
+                    const dotProduct = dx*prevDx + dy*prevDy;
+                    const mag1 = Math.sqrt(dx*dx + dy*dy);
+                    const mag2 = Math.sqrt(prevDx*prevDx + prevDy*prevDy);
+                    
+                    if (mag1 > 0 && mag2 > 0) {
+                        const angle = Math.acos(dotProduct / (mag1 * mag2)) * (180 / Math.PI);
+                        if (angle > 30) { // Threshold for direction change
+                            directionChanges++;
+                        }
+                    }
+                }
+            }
+            
+            // Calculate average speed
+            const avgSpeed = speeds.length > 0 ? 
+                speeds.reduce((sum, s) => sum + s, 0) / speeds.length : 0;
+            
+            // Update UI
+            updateMouseStats(totalDistance, avgSpeed, directionChanges);
+            
+            // Create signature
+            mouseData.signature = {
+                totalDistance,
+                avgSpeed,
+                directionChanges,
+                movementCount: mouseData.movements.length
+            };
+        }
+        
+        function updateMouseStats(dist, spd, chg) {
+            distance.textContent = Math.round(dist);
+            speed.textContent = spd.toFixed(1);
+            changes.textContent = chg;
+        }
+        
+        function finishMouseCapture() {
+            mouseArea.classList.remove('active');
+            processMouseData();
+            
+            // Save if registration
+            if (isRegistration) {
+                saveProfile();
+                showResult(true);
+            } else {
+                // Authenticate
+                authenticate();
+            }
+        }
+        
+        // Profile management
+        function saveProfile() {
+            const profile = {
+                typing: typingData.signature,
+                mouse: mouseData.signature,
+                timestamp: Date.now()
+            };
+            
+            localStorage.setItem('flowid_profile', JSON.stringify(profile));
+        }
+        
+        function getProfile() {
+            const profile = localStorage.getItem('flowid_profile');
+            return profile ? JSON.parse(profile) : null;
+        }
+        
+        function resetProfile() {
+            localStorage.removeItem('flowid_profile');
+            resultMessage.textContent = "FlowID profile has been reset";
+            resultMessage.className = "result success";
+            showCard(resultCard);
+        }
+        
+        // Authentication
+        function authenticate() {
+            const savedProfile = getProfile();
+            
+            if (!savedProfile) {
+                resultMessage.textContent = "No FlowID profile found. Please create one first.";
+                resultMessage.className = "result error";
+                showCard(resultCard);
+                return;
+            }
+            
+            // Calculate match scores (simplified for demo)
+            const typingMatch = calculateTypingMatch(savedProfile.typing, typingData.signature);
+            const mouseMatch = calculateMouseMatch(savedProfile.mouse, mouseData.signature);
+            
+            // Weighted overall score
+            const overallMatch = Math.round((typingMatch * 0.6) + (mouseMatch * 0.4));
+            
+            // Update UI
+            typingScore.textContent = typingMatch + '%';
+            mouseScore.textContent = mouseMatch + '%';
+            overallScore.textContent = overallMatch + '%';
+            
+            // Animate progress bar
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 2;
+                progressBar.style.width = Math.min(progress, overallMatch) + '%';
+                
+                if (progress >= overallMatch) {
+                    clearInterval(interval);
+                    
+                    // Show result
+                    if (overallMatch >= MATCH_THRESHOLD) {
+                        resultMessage.innerHTML = '✔ Access Granted';
+                        resultMessage.className = "result success";
+                    } else {
+                        resultMessage.innerHTML = '✖ Access Denied';
+                        resultMessage.className = "result error";
+                    }
+                }
+            }, 30);
+            
+            showCard(resultCard);
+        }
+        
+        function calculateTypingMatch(saved, current) {
+            // Simplified matching algorithm
+            const wpmDiff = Math.abs(saved.wpm - current.wpm);
+            const wpmScore = Math.max(0, 100 - (wpmDiff * 2));
+            
+            const accuracyDiff = Math.abs(saved.accuracy - current.accuracy);
+            const accuracyScore = Math.max(0, 100 - accuracyDiff);
+            
+            const varianceDiff = Math.abs(saved.dwellVariance - current.dwellVariance);
+            const varianceScore = varianceDiff > 50 ? 50 : Math.max(0, 100 - (varianceDiff * 0.5));
+            
+            return Math.round((wpmScore + accuracyScore + varianceScore) / 3);
+        }
+        
+        function calculateMouseMatch(saved, current) {
+            // Simplified matching algorithm
+            const distDiff = Math.abs(saved.totalDistance - current.totalDistance);
+            const distScore = Math.max(0, 100 - (distDiff / 100));
+            
+            const speedDiff = Math.abs(saved.avgSpeed - current.avgSpeed);
+            const speedScore = Math.max(0, 100 - (speedDiff * 0.5));
+            
+            const changeDiff = Math.abs(saved.directionChanges - current.directionChanges);
+            const changeScore = Math.max(0, 100 - (changeDiff * 2));
+            
+            return Math.round((distScore + speedScore + changeScore) / 3);
+        }
+        
+        function showResult(success) {
+            if (success) {
+                resultMessage.innerHTML = 'FlowID Profile Created Successfully!';
+                resultMessage.className = "result success";
+            }
+            
+            progressBar.style.width = '100%';
+            showCard(resultCard);
+        }
+        
+        // Initialize the app
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
