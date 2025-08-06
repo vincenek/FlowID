@@ -372,6 +372,102 @@
             margin-top: 3px;
         }
         
+        /* Insights Modal */
+        .insights-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.95);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        
+        .insights-modal.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .insights-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(239, 68, 68, 0.15);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: rgba(239, 68, 68, 0.25);
+            transform: rotate(90deg);
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .insight-card {
+            background: rgba(2, 6, 23, 0.4);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid var(--card-border);
+        }
+        
+        .insight-card h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .progress-container {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 5px;
+        }
+        
+        .trend-chart {
+            height: 120px;
+            margin-top: 20px;
+        }
+        
         /* Mobile optimizations */
         @media (max-width: 768px) {
             h1 {
@@ -400,6 +496,10 @@
             
             .onboarding h2 {
                 font-size: 1.8rem;
+            }
+            
+            .insights-content {
+                padding: 25px;
             }
         }
         
@@ -527,6 +627,115 @@
             <p class="privacy-note" style="margin-top: 20px;">
                 <i class="fas fa-shield-alt"></i> Privacy First: All processing happens locally on your device. No data is collected or sent to any servers.
             </p>
+        </div>
+    </div>
+    
+    <!-- Insights Modal -->
+    <div class="insights-modal" id="insights-modal">
+        <div class="insights-content">
+            <div class="close-btn" id="close-insights">
+                <i class="fas fa-times"></i>
+            </div>
+            
+            <div class="logo" style="justify-content: flex-start; margin-bottom: 30px;">
+                <div class="logo-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h1 style="font-size: 2.2rem;">Cognitive Insights</h1>
+            </div>
+            
+            <p>Detailed analysis of your focus patterns and productivity metrics</p>
+            
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <h3><i class="fas fa-brain"></i> Focus Distribution</h3>
+                    <p>Your time spent in different cognitive states</p>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 65%"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Deep Focus: 65%</span>
+                        <span>65 min</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 25%; background: var(--warning);"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Moderate: 25%</span>
+                        <span>25 min</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 10%; background: var(--danger);"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Distracted: 10%</span>
+                        <span>10 min</span>
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <h3><i class="fas fa-wave-square"></i> Focus Trends</h3>
+                    <p>Your focus patterns throughout the session</p>
+                    <div class="trend-chart">
+                        <canvas id="trend-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <h3><i class="fas fa-bolt"></i> Peak Performance</h3>
+                    <p>Your most productive time periods</p>
+                    
+                    <div style="margin: 20px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>10:30 - 11:15 AM</span>
+                            <span>92% Focus</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 92%"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>2:45 - 3:30 PM</span>
+                            <span>87% Focus</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 87%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <h3><i class="fas fa-lightbulb"></i> Improvement Tips</h3>
+                    <p>Personalized recommendations based on your data</p>
+                    
+                    <div style="margin-top: 20px;">
+                        <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: flex-start;">
+                            <div style="background: rgba(16, 185, 129, 0.15); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-clock" style="color: var(--success);"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin-bottom: 5px;">Schedule Breaks</h4>
+                                <p style="opacity: 0.8;">Take a 5-minute break every 50 minutes to maintain high focus levels</p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: flex-start;">
+                            <div style="background: rgba(37, 99, 235, 0.15); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-moon" style="color: var(--primary-light);"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin-bottom: 5px;">Morning Focus</h4>
+                                <p style="opacity: 0.8;">Your cognitive performance peaks between 9-11 AM - schedule important tasks then</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -683,7 +892,9 @@
             engagementEl: document.getElementById('engagement'),
             app: document.getElementById('app'),
             onboarding: document.getElementById('onboarding'),
-            loading: document.getElementById('loading')
+            loading: document.getElementById('loading'),
+            insightsModal: document.getElementById('insights-modal'),
+            closeInsights: document.getElementById('close-insights')
         };
         
         // Initialize Chart
@@ -1086,12 +1297,68 @@
             }
         }
         
+        // Show insights
+        function showInsights() {
+            // Initialize trend chart
+            const trendCtx = document.getElementById('trend-chart').getContext('2d');
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM'],
+                    datasets: [{
+                        label: 'Focus Level',
+                        data: [65, 78, 92, 85, 70, 82, 87, 75],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#3b82f6',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.6)' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: 'rgba(255, 255, 255, 0.6)' }
+                        }
+                    }
+                }
+            });
+            
+            // Show insights modal
+            dom.insightsModal.classList.add('show');
+        }
+        
         // Event Listeners
         dom.workTextarea.addEventListener('keydown', trackKeystrokes);
         document.getElementById('start-btn').addEventListener('click', startAnalysis);
         dom.calibrateBtn.addEventListener('click', startCalibration);
         dom.resetBtn.addEventListener('click', resetSession);
         dom.pauseBtn.addEventListener('click', toggleAnalysis);
+        dom.insightsBtn.addEventListener('click', showInsights);
+        dom.closeInsights.addEventListener('click', () => {
+            dom.insightsModal.classList.remove('show');
+        });
+        
+        // Close insights when clicking outside content
+        dom.insightsModal.addEventListener('click', (e) => {
+            if (e.target === dom.insightsModal) {
+                dom.insightsModal.classList.remove('show');
+            }
+        });
         
         // Initialize
         initModel();
