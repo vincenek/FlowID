@@ -2,1341 +2,714 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FlowID | Behavioral Authentication</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusFlow | NeuroAdaptTech MVP</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Orbitron:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #1a2a6c, #3a7bd5, #00d2ff);
-            --secondary-gradient: linear-gradient(135deg, #654ea3, #da98b4);
-            --dark-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            --success-gradient: linear-gradient(135deg, #00b09b, #96c93d);
-            --error-gradient: linear-gradient(135deg, #ff416c, #ff4b2b);
-            --warning-gradient: linear-gradient(135deg, #f7971e, #ffd200);
-            --card-bg: rgba(25, 32, 71, 0.85);
-            --card-border: rgba(92, 107, 192, 0.3);
-            --text-light: #f0f8ff;
-            --text-muted: #a0aec0;
-            --text-dark: #1a202c;
-            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            --shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            --success: #4ade80;
-            --error: #f87171;
-            --warning: #fbbf24;
-            --ios-blue: #007AFF;
-            --android-green: #3DDC84;
+            --focus-bg: #0a192f;
+            --distracted-bg: #2a0a46;
+            --primary: #00c6ff;
+            --secondary: #0072ff;
+            --success: #00d26a;
+            --warning: #ffb400;
+            --danger: #ff4d6d;
+            --dark: #121826;
+            --light: #f0f7ff;
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-user-select: none;
-            user-select: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--focus-bg) 0%, var(--dark) 100%);
+            color: var(--light);
             min-height: 100vh;
-            background: var(--dark-gradient);
-            background-size: 400% 400%;
-            animation: gradientFlow 20s ease infinite;
-            color: var(--text-light);
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            padding: 15px;
-            line-height: 1.6;
-            position: relative;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        @keyframes gradientFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            padding: 20px;
+            transition: background 1s ease;
         }
         
         .container {
-            width: 100%;
-            max-width: 500px;
+            max-width: 1200px;
             margin: 0 auto;
-            display: flex;
-            flex-direction: column;
         }
         
-        .header {
+        header {
             text-align: center;
-            margin: 10px 0 20px;
-            padding: 0 10px;
+            padding: 20px 0 40px;
         }
         
-        .logo {
-            font-family: 'Orbitron', sans-serif;
+        h1 {
             font-size: 2.8rem;
-            font-weight: 800;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: linear-gradient(to right, #00d2ff, #3a7bd5);
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 15px rgba(58, 123, 213, 0.5);
-            position: relative;
+            -webkit-text-fill-color: transparent;
             display: inline-block;
         }
         
         .tagline {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin: 0 auto 15px;
-            color: var(--text-muted);
+            font-size: 1.2rem;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
         }
         
-        .security-badge {
-            display: inline-block;
-            background: rgba(0, 176, 155, 0.2);
-            color: var(--success);
-            padding: 6px 15px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            margin-top: 10px;
-            border: 1px solid var(--success);
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
         }
         
         .card {
-            background: var(--card-bg);
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 20px;
-        }
-        
-        .card-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(92, 107, 192, 0.2);
-        }
-        
-        .card-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--primary-gradient);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 12px;
-            font-size: 1.2rem;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .card-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.4rem;
-            color: white;
-            letter-spacing: 0.5px;
-        }
-        
-        .sentence-container {
-            background: rgba(11, 19, 43, 0.6);
-            border-radius: 15px;
-            padding: 15px;
-            text-align: center;
-            font-size: 1.3rem;
-            font-weight: 500;
-            margin-bottom: 15px;
-            border: 1px solid rgba(92, 107, 192, 0.2);
-        }
-        
-        .typing-input {
-            width: 100%;
-            padding: 14px 18px;
-            font-size: 1.1rem;
-            background: rgba(11, 19, 43, 0.5);
-            border: 2px solid rgba(92, 107, 192, 0.3);
-            border-radius: 15px;
-            color: white;
-            outline: none;
-            transition: var(--transition);
-            text-align: center;
-            margin-bottom: 15px;
-            -webkit-user-select: text;
-            user-select: text;
-        }
-        
-        .typing-input:focus {
-            border-color: #3a7bd5;
-            background: rgba(11, 19, 43, 0.7);
-            box-shadow: 0 0 15px rgba(58, 123, 213, 0.3);
-        }
-        
-        .pointer-area {
-            width: 100%;
-            height: 250px;
-            background: rgba(11, 19, 43, 0.3);
-            border-radius: 15px;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: crosshair;
-            border: 2px dashed rgba(92, 107, 192, 0.3);
-            touch-action: none;
+            gap: 10px;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: var(--primary);
         }
         
-        .pointer-area.active {
-            background: rgba(11, 19, 43, 0.5);
-            border: 2px solid #3a7bd5;
-            box-shadow: 0 0 20px rgba(58, 123, 213, 0.3);
-        }
-        
-        .pointer-path {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .focus-meter {
+            height: 40px;
             width: 100%;
-            height: 100%;
-            pointer-events: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            margin: 30px 0;
+            overflow: hidden;
+            position: relative;
         }
         
-        .timer {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.2rem;
-            color: white;
-            text-shadow: 0 0 10px rgba(58, 123, 213, 0.7);
-            z-index: 10;
+        .focus-level {
+            height: 100%;
+            width: 70%;
+            background: linear-gradient(90deg, var(--success), var(--primary));
+            border-radius: 20px;
+            transition: width 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .focus-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 10px;
         }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin: 15px 0;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
         }
         
         .stat-card {
-            background: rgba(11, 19, 43, 0.5);
+            background: rgba(255, 255, 255, 0.07);
             border-radius: 12px;
             padding: 15px;
             text-align: center;
-            border: 1px solid rgba(92, 107, 192, 0.2);
-            transition: var(--transition);
         }
         
         .stat-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.6rem;
-            margin-bottom: 5px;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--primary);
         }
         
         .stat-label {
             font-size: 0.9rem;
-            opacity: 0.8;
-            color: var(--text-muted);
+            opacity: 0.7;
         }
         
-        .result-container {
-            text-align: center;
-            padding: 25px;
-            border-radius: 20px;
-            margin: 15px 0;
-            font-size: 1.8rem;
-            font-weight: bold;
-            transition: var(--transition);
-            background: rgba(11, 19, 43, 0.6);
-            border: 1px solid rgba(92, 107, 192, 0.2);
+        .work-area {
+            margin-top: 30px;
         }
         
-        .success {
-            background: rgba(0, 176, 155, 0.15);
-            color: var(--success);
-            border: 2px solid var(--success);
-            box-shadow: 0 0 20px rgba(0, 176, 155, 0.3);
-        }
-        
-        .error {
-            background: rgba(255, 75, 43, 0.15);
-            color: var(--error);
-            border: 2px solid var(--error);
-            box-shadow: 0 0 20px rgba(255, 75, 43, 0.3);
-        }
-        
-        .progress-container {
+        textarea {
             width: 100%;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 20px 0;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            background: var(--success-gradient);
-            width: 0%;
-            transition: width 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border-radius: 10px;
-        }
-        
-        .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 15px;
-        }
-        
-        .btn {
-            background: var(--primary-gradient);
+            height: 180px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
             color: white;
-            border: none;
-            padding: 14px 28px;
             font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
-            border-radius: 50px;
+            resize: none;
+            transition: all 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 198, 255, 0.2);
+        }
+        
+        .distracted textarea {
+            opacity: 0.5;
+            filter: blur(1px);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            flex: 1;
+            min-width: 150px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(0, 198, 255, 0.15);
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1rem;
             cursor: pointer;
-            transition: var(--transition);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: var(--shadow);
+        }
+        
+        button:hover {
+            background: rgba(0, 198, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        button.primary {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .camera-feed {
             position: relative;
-            overflow: hidden;
-            z-index: 1;
-            min-width: 180px;
-            flex: 1;
+            margin-top: 20px;
         }
         
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
+        video, canvas {
             width: 100%;
-            height: 100%;
-            background: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2));
-            transform: translateX(-100%);
-            transition: var(--transition);
-            z-index: -1;
+            max-width: 400px;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto;
         }
         
-        .btn:active {
-            transform: scale(0.98);
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--dark);
+            border-left: 4px solid var(--warning);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: translateX(120%);
+            transition: transform 0.4s ease;
+            max-width: 350px;
+            z-index: 1000;
         }
         
-        .btn-secondary {
-            background: rgba(25, 32, 71, 0.7);
-            border: 1px solid rgba(92, 107, 192, 0.5);
+        .notification.show {
+            transform: translateX(0);
         }
         
-        .btn-warning {
-            background: var(--warning-gradient);
-        }
-        
-        .ios-btn {
-            background: var(--ios-blue);
-            border-radius: 14px;
-        }
-        
-        .android-btn {
-            background: var(--android-green);
-            border-radius: 6px;
-        }
-        
-        .device-indicator {
+        .notification h3 {
+            color: var(--warning);
+            margin-bottom: 8px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 15px;
-            margin: 15px 0;
+            gap: 10px;
         }
         
-        .device-icon {
-            font-size: 1.8rem;
-            padding: 10px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
+        .chart-container {
+            height: 250px;
+            margin-top: 20px;
         }
         
-        .signature-visual {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-            flex-wrap: wrap;
+        .loading {
+            text-align: center;
+            padding: 40px 0;
         }
         
-        .signature-dot {
-            width: 10px;
-            height: 10px;
-            margin: 5px;
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--primary);
             border-radius: 50%;
-            background: #00d2ff;
-            box-shadow: 0 0 10px #00d2ff;
-            animation: signaturePulse 2s infinite;
-            opacity: 0.8;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
         }
         
-        @keyframes signaturePulse {
-            0%, 100% { transform: scale(1); opacity: 0.7; }
-            50% { transform: scale(1.3); opacity: 1; }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
-        .hidden {
-            display: none;
+        .instructions {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            line-height: 1.6;
         }
         
         .footer {
-            margin-top: 20px;
             text-align: center;
-            font-size: 0.8rem;
-            opacity: 0.7;
-            padding: 15px;
-            border-top: 1px solid rgba(92, 107, 192, 0.2);
-        }
-        
-        .audit-log {
-            background: rgba(11, 19, 43, 0.5);
-            border-radius: 15px;
-            padding: 15px;
-            margin-top: 15px;
-            max-height: 150px;
-            overflow-y: auto;
-            border: 1px solid rgba(92, 107, 192, 0.2);
-            font-size: 0.85rem;
-        }
-        
-        .log-entry {
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(92, 107, 192, 0.1);
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .log-time {
-            color: var(--text-muted);
-            white-space: nowrap;
-            margin-right: 10px;
-        }
-        
-        .log-message {
-            flex: 1;
-            text-align: left;
-        }
-        
-        .success {
-            color: var(--success);
-        }
-        
-        .error {
-            color: var(--error);
-        }
-        
-        .warning {
-            color: var(--warning);
-        }
-        
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 6px;
-        }
-        
-        .status-active {
-            background: var(--success);
-            box-shadow: 0 0 8px var(--success);
-        }
-        
-        .status-inactive {
-            background: var(--error);
-        }
-        
-        /* Mobile-specific optimizations */
-        @media (max-width: 480px) {
-            .logo {
-                font-size: 2.2rem;
-            }
-            
-            .card {
-                padding: 15px;
-            }
-            
-            .card-title {
-                font-size: 1.2rem;
-            }
-            
-            .sentence-container {
-                font-size: 1.1rem;
-                padding: 12px;
-            }
-            
-            .typing-input {
-                font-size: 1rem;
-                padding: 12px 15px;
-            }
-            
-            .pointer-area {
-                height: 200px;
-            }
-            
-            .timer {
-                font-size: 1.8rem;
-            }
-            
-            .btn {
-                padding: 12px 20px;
-                font-size: 0.9rem;
-                min-width: 140px;
-            }
-            
-            .result-container {
-                font-size: 1.5rem;
-                padding: 20px;
-            }
+            margin-top: 40px;
+            padding: 20px 0;
+            font-size: 0.9rem;
+            opacity: 0.6;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header class="header">
-            <h1 class="logo">FlowID</h1>
-            <p class="tagline">Behavioral Biometric Authentication</p>
-            <div class="security-badge">
-                <i class="fas fa-shield-alt"></i>
-                <span>Military Encryption • Cross-Platform • Production Ready</span>
-            </div>
-            
-            <div class="device-indicator">
-                <div class="device-icon ios-btn">
-                    <i class="fab fa-apple"></i>
-                </div>
-                <div class="device-icon android-btn">
-                    <i class="fab fa-android"></i>
-                </div>
-                <div class="device-icon">
-                    <i class="fas fa-laptop"></i>
-                </div>
-            </div>
+        <header>
+            <h1><i class="fas fa-brain"></i> FocusFlow</h1>
+            <p class="tagline">NeuroAdaptTech that dynamically adapts to your cognitive state in real-time</p>
         </header>
         
-        <div class="card" id="authCard">
-            <div class="card-header">
-                <div class="card-icon">
-                    <i class="fas fa-fingerprint"></i>
-                </div>
-                <h2 class="card-title">Authentication</h2>
-            </div>
-            <div class="card-content">
-                <p>Type this sentence at your natural pace:</p>
-                
-                <div class="sentence-container" id="sentenceDisplay">Secure access with biometrics</div>
-                
-                <input type="text" class="typing-input" id="typingInput" placeholder="Type here...">
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="typingSpeed">0</div>
-                        <div class="stat-label">Speed (WPM)</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="accuracy">0%</div>
-                        <div class="stat-label">Accuracy</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="variance">0</div>
-                        <div class="stat-label">Rhythm</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="confidence">0%</div>
-                        <div class="stat-label">Confidence</div>
-                    </div>
-                </div>
-                
-                <div class="signature-visual" id="signatureVisual"></div>
-                
-                <div class="btn-group">
-                    <button id="startAuthBtn" class="btn">
-                        <i class="fas fa-play-circle"></i> Start
-                    </button>
-                    <button id="resetBtn" class="btn btn-warning">
-                        <i class="fas fa-redo"></i> Reset
-                    </button>
-                </div>
-            </div>
+        <div class="notification" id="notification">
+            <h3><i class="fas fa-exclamation-triangle"></i> Attention Needed</h3>
+            <p>You've been distracted multiple times. Consider taking a short break to recharge.</p>
         </div>
         
-        <div class="card" id="pointerCard">
-            <div class="card-header">
-                <div class="card-icon">
-                    <i class="fas fa-hand-pointer"></i>
-                </div>
-                <h2 class="card-title">Pointer Biometrics</h2>
-            </div>
-            <div class="card-content">
-                <p id="pointerInstruction">Move your <span id="pointerType">finger/mouse</span> naturally:</p>
+        <div class="dashboard">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-gauge-high"></i> Focus Dashboard</h2>
                 
-                <div class="pointer-area" id="pointerArea">
-                    <canvas class="pointer-path" id="pointerPath"></canvas>
-                    <div class="timer" id="pointerTimer">READY</div>
+                <div class="focus-meter">
+                    <div class="focus-level" id="focus-level">78%</div>
+                </div>
+                <div class="focus-labels">
+                    <span>Distracted</span>
+                    <span>Focused</span>
                 </div>
                 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-value" id="distance">0</div>
-                        <div class="stat-label">Distance</div>
+                        <div class="stat-label">Distractions</div>
+                        <div class="stat-value" id="distraction-count">3</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="speed">0</div>
-                        <div class="stat-label">Avg Speed</div>
+                        <div class="stat-label">Focus Time</div>
+                        <div class="stat-value" id="focus-time">12:45</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="changes">0</div>
-                        <div class="stat-label">Direction</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="complexity">0</div>
-                        <div class="stat-label">Complexity</div>
+                        <div class="stat-label">Productivity</div>
+                        <div class="stat-value" id="productivity">87%</div>
                     </div>
                 </div>
                 
-                <div class="progress-container">
-                    <div class="progress-bar" id="pointerProgress"></div>
+                <div class="chart-container">
+                    <canvas id="focus-chart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-face-smile"></i> Cognitive Analysis</h2>
+                
+                <div class="camera-feed">
+                    <video id="webcam" autoplay playsinline width="640" height="480" style="display:none"></video>
+                    <canvas id="output" width="640" height="480"></canvas>
                 </div>
                 
-                <div class="btn-group">
-                    <button id="startPointerBtn" class="btn">
-                        <i class="fas fa-hand-point-up"></i> Start Analysis
-                    </button>
+                <div class="instructions">
+                    <p><i class="fas fa-info-circle"></i> Keep your face visible to the camera. The system analyzes your eye movements and facial orientation to detect focus levels.</p>
                 </div>
             </div>
         </div>
         
-        <div class="card" id="resultCard">
-            <div class="card-header">
-                <div class="card-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <h2 class="card-title">Authentication Results</h2>
-            </div>
-            <div class="card-content">
-                <div class="result-container" id="resultMessage">
-                    <i class="fas fa-lock"></i> Analyzing your behavior
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <i class="fas fa-keyboard"></i>
-                        <div class="stat-value" id="typingScore">0%</div>
-                        <div class="stat-label">Typing</div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-hand-pointer"></i>
-                        <div class="stat-value" id="pointerScore">0%</div>
-                        <div class="stat-label">Pointer</div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-shield-alt"></i>
-                        <div class="stat-value" id="overallScore">0%</div>
-                        <div class="stat-label">Overall</div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-bolt"></i>
-                        <div class="stat-value" id="responseTime">0ms</div>
-                        <div class="stat-label">Time</div>
-                    </div>
-                </div>
-                
-                <div class="progress-container">
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
-                
-                <div class="audit-log">
-                    <h3><i class="fas fa-clipboard-list"></i> Security Log</h3>
-                    <div id="auditLogEntries">
-                        <div class="log-entry">
-                            <span class="log-time">[System]</span>
-                            <span class="log-message success">FlowID initialized</span>
-                        </div>
-                        <div class="log-entry">
-                            <span class="log-time">[System]</span>
-                            <span class="log-message">AES-256 encryption enabled</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="btn-group">
-                    <button id="retryBtn" class="btn">
-                        <i class="fas fa-sync-alt"></i> Try Again
-                    </button>
-                    <button id="lockBtn" class="btn btn-secondary">
-                        <i class="fas fa-lock"></i> Lock Session
-                    </button>
-                </div>
+        <div class="card work-area">
+            <h2 class="card-title"><i class="fas fa-keyboard"></i> Adaptive Workspace</h2>
+            
+            <textarea id="work-textarea" placeholder="Start typing here... NeuroAdaptTech will monitor your cognitive engagement and adapt the interface accordingly. Try looking away from the screen to see the adaptation in action."></textarea>
+            
+            <div class="controls">
+                <button id="start-btn" class="primary">
+                    <i class="fas fa-play"></i> Start Analysis
+                </button>
+                <button id="calibrate-btn">
+                    <i class="fas fa-sliders"></i> Calibrate
+                </button>
+                <button id="reset-btn">
+                    <i class="fas fa-rotate"></i> Reset Session
+                </button>
             </div>
         </div>
         
-        <footer class="footer">
-            <p>FlowID Mobile v3.1 | © 2023 Flow Security Inc. | Production Ready</p>
-            <p>Optimized for iOS, Android, and Desktop | Patent Pending</p>
-        </footer>
+        <div class="footer">
+            <p>NeuroAdaptTech MVP | Pioneering the Future of Cognitive Interfaces</p>
+            <p>FocusFlow utilizes TensorFlow.js and BlazeFace for real-time cognitive analysis</p>
+        </div>
     </div>
-    
+
     <script>
-        // DOM Elements
-        const authCard = document.getElementById('authCard');
-        const pointerCard = document.getElementById('pointerCard');
-        const resultCard = document.getElementById('resultCard');
-        const startAuthBtn = document.getElementById('startAuthBtn');
-        const startPointerBtn = document.getElementById('startPointerBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const retryBtn = document.getElementById('retryBtn');
-        const lockBtn = document.getElementById('lockBtn');
-        const typingInput = document.getElementById('typingInput');
-        const pointerArea = document.getElementById('pointerArea');
-        const pointerCanvas = document.getElementById('pointerPath');
-        const pointerTimer = document.getElementById('pointerTimer');
-        const pointerProgress = document.getElementById('pointerProgress');
-        const resultMessage = document.getElementById('resultMessage');
-        const progressBar = document.getElementById('progressBar');
-        const signatureVisual = document.getElementById('signatureVisual');
-        const auditLogEntries = document.getElementById('auditLogEntries');
-        const pointerInstruction = document.getElementById('pointerInstruction');
-        const pointerType = document.getElementById('pointerType');
-        
-        // Stats elements
-        const typingSpeed = document.getElementById('typingSpeed');
-        const accuracy = document.getElementById('accuracy');
-        const variance = document.getElementById('variance');
-        const confidence = document.getElementById('confidence');
-        const distance = document.getElementById('distance');
-        const speed = document.getElementById('speed');
-        const changes = document.getElementById('changes');
-        const complexity = document.getElementById('complexity');
-        const typingScore = document.getElementById('typingScore');
-        const pointerScore = document.getElementById('pointerScore');
-        const overallScore = document.getElementById('overallScore');
-        const responseTime = document.getElementById('responseTime');
-        
-        // Constants
-        const REFERENCE_SENTENCE = "Secure access with biometrics";
-        const POINTER_DURATION = 4; // seconds
-        const MATCH_THRESHOLD = 80; // percentage
-        const CRYPTO_KEY = "FlowID_Mobile_Key_v3"; // In real app, derive from user behavior
-        
         // State variables
-        let isRegistration = false;
-        let typingData = {
-            startTime: 0,
-            endTime: 0,
-            keyEvents: [],
-            signature: null
-        };
+        let focusScore = 78;
+        let distractionCount = 3;
+        let focusStartTime = Date.now();
+        let lastKeystrokeTime = 0;
+        let lastFaceDetectionTime = 0;
+        let distractionStartTime = 0;
+        let isCalibrating = false;
+        let isActive = false;
+        let faceDetectionCount = 0;
+        let calibrationData = { eyePositions: [] };
+        let focusHistory = [];
         
-        let pointerData = {
-            startTime: 0,
-            movements: [],
-            signature: null,
-            timer: null,
-            isActive: false
-        };
+        // DOM Elements
+        const focusLevel = document.getElementById('focus-level');
+        const distractionCountEl = document.getElementById('distraction-count');
+        const focusTimeEl = document.getElementById('focus-time');
+        const productivityEl = document.getElementById('productivity');
+        const workTextarea = document.getElementById('work-textarea');
+        const webcam = document.getElementById('webcam');
+        const canvas = document.getElementById('output');
+        const ctx = canvas.getContext('2d');
+        const notification = document.getElementById('notification');
+        const startBtn = document.getElementById('start-btn');
+        const calibrateBtn = document.getElementById('calibrate-btn');
+        const resetBtn = document.getElementById('reset-btn');
         
-        let canvasContext;
-        let isMobile = false;
+        // Focus Chart
+        const focusChart = new Chart(document.getElementById('focus-chart'), {
+            type: 'line',
+            data: {
+                labels: Array(20).fill(''),
+                datasets: [{
+                    label: 'Focus Level',
+                    data: Array(20).fill(75),
+                    borderColor: '#00c6ff',
+                    backgroundColor: 'rgba(0, 198, 255, 0.1)',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 100,
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    x: { display: false }
+                }
+            }
+        });
+        
+        // Initialize TensorFlow.js model
+        let model;
+        async function initModel() {
+            try {
+                model = await blazeface.load();
+                console.log("Model loaded successfully");
+            } catch (err) {
+                console.error("Error loading model:", err);
+                alert("Error loading face detection model. Please check console for details.");
+            }
+        }
+        
+        // Setup webcam
+        async function setupWebcam() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "user" } 
+                });
+                webcam.srcObject = stream;
+                return new Promise((resolve) => {
+                    webcam.onloadedmetadata = () => {
+                        resolve();
+                    };
+                });
+            } catch (err) {
+                console.error("Error accessing webcam:", err);
+                alert("Could not access webcam. Please ensure you have a camera connected and permissions granted.");
+            }
+        }
+        
+        // Detect face and estimate focus
+        async function detectFocus() {
+            if (!model || !isActive) return;
+            
+            try {
+                const predictions = await model.estimateFaces(webcam, false);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                if (predictions.length > 0) {
+                    const face = predictions[0];
+                    drawFace(face);
+                    
+                    // Calculate focus metrics
+                    const eyeDistance = calculateEyeDistance(face.landmarks);
+                    const isFacingScreen = checkFacingScreen(face);
+                    
+                    // Update focus score based on metrics
+                    updateFocusScore(isFacingScreen, eyeDistance);
+                    lastFaceDetectionTime = Date.now();
+                    faceDetectionCount++;
+                } else {
+                    // No face detected - likely distracted
+                    if (Date.now() - lastFaceDetectionTime > 3000) {
+                        updateFocusScore(false, 0);
+                    }
+                }
+            } catch (err) {
+                console.error("Face detection error:", err);
+            }
+            
+            requestAnimationFrame(detectFocus);
+        }
+        
+        // Draw face landmarks on canvas
+        function drawFace(face) {
+            // Draw bounding box
+            const box = face.topLeft.concat(face.bottomRight);
+            ctx.strokeStyle = '#00c6ff';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(box[0], box[1], box[2] - box[0], box[3] - box[1]);
+            
+            // Draw landmarks
+            ctx.fillStyle = '#ff4d6d';
+            face.landmarks.forEach(point => {
+                ctx.beginPath();
+                ctx.arc(point[0], point[1], 4, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+        }
+        
+        // Calculate eye distance (simplified focus metric)
+        function calculateEyeDistance(landmarks) {
+            const leftEye = landmarks[0];
+            const rightEye = landmarks[1];
+            return Math.hypot(rightEye[0] - leftEye[0], rightEye[1] - leftEye[1]);
+        }
+        
+        // Check if user is facing the screen
+        function checkFacingScreen(face) {
+            const nose = face.landmarks[2];
+            const leftEye = face.landmarks[0];
+            const rightEye = face.landmarks[1];
+            
+            // Calculate if nose is between eyes
+            const minX = Math.min(leftEye[0], rightEye[0]);
+            const maxX = Math.max(leftEye[0], rightEye[0]);
+            
+            return nose[0] > minX && nose[0] < maxX;
+        }
+        
+        // Update focus score based on face detection
+        function updateFocusScore(isFacingScreen, eyeDistance) {
+            if (isCalibrating) return;
+            
+            const now = Date.now();
+            const timeSinceLastKeystroke = lastKeystrokeTime ? now - lastKeystrokeTime : 0;
+            
+            // Base score adjustment
+            let adjustment = 0;
+            
+            if (isFacingScreen) {
+                adjustment += 1.5;
+                distractionStartTime = 0;
+                
+                // Reward active typing
+                if (timeSinceLastKeystroke < 2000) {
+                    adjustment += 1;
+                }
+            } else {
+                adjustment -= 2;
+                
+                // Start distraction timer
+                if (!distractionStartTime) {
+                    distractionStartTime = now;
+                } else if (now - distractionStartTime > 5000) {
+                    adjustment -= 3;
+                }
+            }
+            
+            // Punish long typing pauses
+            if (timeSinceLastKeystroke > 5000) {
+                adjustment -= 1;
+            }
+            
+            // Apply adjustment with smoothing
+            focusScore = Math.min(100, Math.max(20, focusScore + adjustment * 0.2));
+            
+            // Check for significant distraction events
+            if (adjustment < -1.5) {
+                distractionCount++;
+                distractionCountEl.textContent = distractionCount;
+                
+                // Show notification after multiple distractions
+                if (distractionCount >= 3 && distractionCount % 2 === 1) {
+                    showNotification();
+                }
+            }
+            
+            updateUI();
+        }
+        
+        // Track keystrokes for activity detection
+        function trackKeystrokes() {
+            const now = Date.now();
+            
+            // Detect distraction patterns
+            if (lastKeystrokeTime && now - lastKeystrokeTime > 3000) {
+                // Penalize long pauses
+                focusScore = Math.max(20, focusScore - 3);
+                updateUI();
+            }
+            
+            // Reward active typing
+            focusScore = Math.min(100, focusScore + 0.5);
+            updateUI();
+            
+            lastKeystrokeTime = now;
+        }
+        
+        // Update UI based on focus score
+        function updateUI() {
+            // Update focus meter
+            focusLevel.style.width = `${focusScore}%`;
+            focusLevel.textContent = `${Math.round(focusScore)}%`;
+            
+            // Update productivity metric
+            const productivity = Math.min(100, Math.max(20, focusScore - 5 + Math.random() * 10));
+            productivityEl.textContent = `${Math.round(productivity)}%`;
+            
+            // Update focus time
+            const focusSeconds = Math.floor((Date.now() - focusStartTime) / 1000);
+            const minutes = Math.floor(focusSeconds / 60);
+            const seconds = focusSeconds % 60;
+            focusTimeEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Adapt interface
+            document.body.className = focusScore > 65 ? '' : 'distracted';
+            
+            // Update chart
+            focusHistory.push(focusScore);
+            if (focusHistory.length > 20) focusHistory.shift();
+            focusChart.data.datasets[0].data = focusHistory;
+            focusChart.update();
+        }
+        
+        // Show notification
+        function showNotification() {
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+        
+        // Calibration process
+        function startCalibration() {
+            isCalibrating = true;
+            alert("Calibration started. Please look directly at the screen with a focused expression for 5 seconds.");
+            calibrationData = { eyePositions: [] };
+            
+            setTimeout(() => {
+                isCalibrating = false;
+                alert("Calibration complete! NeuroAdaptTech is now optimized for your cognitive patterns.");
+            }, 5000);
+        }
+        
+        // Reset session
+        function resetSession() {
+            focusScore = 78;
+            distractionCount = 0;
+            focusStartTime = Date.now();
+            distractionCountEl.textContent = "0";
+            focusHistory = Array(20).fill(75);
+            focusChart.data.datasets[0].data = focusHistory;
+            focusChart.update();
+            updateUI();
+        }
+        
+        // Start analysis
+        async function startAnalysis() {
+            if (isActive) return;
+            
+            try {
+                isActive = true;
+                startBtn.innerHTML = '<i class="fas fa-pause"></i> Pause Analysis';
+                startBtn.classList.remove('primary');
+                
+                await setupWebcam();
+                await initModel();
+                detectFocus();
+            } catch (err) {
+                console.error("Start analysis failed:", err);
+                isActive = false;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Start Analysis';
+                startBtn.classList.add('primary');
+            }
+        }
+        
+        // Pause analysis
+        function pauseAnalysis() {
+            isActive = false;
+            startBtn.innerHTML = '<i class="fas fa-play"></i> Resume Analysis';
+            startBtn.classList.add('primary');
+        }
+        
+        // Event Listeners
+        workTextarea.addEventListener('keydown', trackKeystrokes);
+        
+        startBtn.addEventListener('click', () => {
+            if (isActive) {
+                pauseAnalysis();
+            } else {
+                startAnalysis();
+            }
+        });
+        
+        calibrateBtn.addEventListener('click', startCalibration);
+        resetBtn.addEventListener('click', resetSession);
         
         // Initialize
-        function init() {
-            // Detect mobile device
-            isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            pointerType.textContent = isMobile ? "finger" : "mouse";
-            
-            // Set up canvas
-            canvasContext = pointerCanvas.getContext('2d');
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-            
-            // Initialize signature visualization
-            initSignatureVisual();
-            
-            // Event listeners
-            startAuthBtn.addEventListener('click', startAuthentication);
-            startPointerBtn.addEventListener('click', startPointerCapture);
-            resetBtn.addEventListener('click', resetProfile);
-            retryBtn.addEventListener('click', resetFlow);
-            lockBtn.addEventListener('click', lockSession);
-            
-            typingInput.addEventListener('keydown', handleKeyDown);
-            typingInput.addEventListener('keyup', handleKeyUp);
-            
-            // Pointer event listeners
-            if (isMobile) {
-                pointerArea.addEventListener('touchstart', handleTouchStart);
-                pointerArea.addEventListener('touchmove', handleTouchMove);
-                pointerArea.addEventListener('touchend', handleTouchEnd);
-            } else {
-                pointerArea.addEventListener('mousedown', handleMouseDown);
-                pointerArea.addEventListener('mousemove', handleMouseMove);
-                pointerArea.addEventListener('mouseup', handleMouseUp);
-                pointerArea.addEventListener('mouseleave', handleMouseUp);
-            }
-            
-            // Add initial audit log
-            addAuditLog("System initialized", "success");
-            addAuditLog(`${isMobile ? "Mobile" : "Desktop"} mode activated`, "success");
-            
-            // Check for existing profile
-            if (getProfile()) {
-                addAuditLog("Biometric profile loaded", "success");
-            } else {
-                addAuditLog("No profile found. Please enroll.", "warning");
-            }
-        }
-        
-        function resizeCanvas() {
-            pointerCanvas.width = pointerArea.clientWidth;
-            pointerCanvas.height = pointerArea.clientHeight;
-        }
-        
-        function initSignatureVisual() {
-            signatureVisual.innerHTML = '';
-            for (let i = 0; i < 15; i++) {
-                const dot = document.createElement('div');
-                dot.className = 'signature-dot';
-                dot.style.animationDelay = `${i * 0.1}s`;
-                signatureVisual.appendChild(dot);
-            }
-        }
-        
-        // Typing capture
-        function startAuthentication() {
-            typingInput.value = '';
-            typingInput.focus();
-            typingInput.disabled = false;
-            typingData = {
-                startTime: 0,
-                endTime: 0,
-                keyEvents: [],
-                signature: null
-            };
-            
-            updateTypingStats(0, 100, 0, 0);
-            addAuditLog("Typing capture started", "success");
-        }
-        
-        function handleKeyDown(e) {
-            if (typingData.startTime === 0) {
-                typingData.startTime = Date.now();
-            }
-            
-            // Record keydown event
-            typingData.keyEvents.push({
-                type: 'down',
-                key: e.key,
-                time: Date.now(),
-                timestamp: Date.now() - typingData.startTime
-            });
-        }
-        
-        function handleKeyUp(e) {
-            // Record keyup event
-            typingData.keyEvents.push({
-                type: 'up',
-                key: e.key,
-                time: Date.now(),
-                timestamp: Date.now() - typingData.startTime
-            });
-            
-            // Check if sentence is complete
-            if (typingInput.value.toLowerCase() === REFERENCE_SENTENCE.toLowerCase()) {
-                typingData.endTime = Date.now();
-                processTypingData();
-                startPointerCapture();
-            }
-            
-            // Update stats
-            updateTypingStats();
-        }
-        
-        function updateTypingStats(wpm = 0, acc = 0, varValue = 0, conf = 0) {
-            typingSpeed.textContent = wpm.toFixed(1);
-            accuracy.textContent = acc.toFixed(0) + '%';
-            variance.textContent = varValue.toFixed(1);
-            confidence.textContent = conf.toFixed(0) + '%';
-        }
-        
-        function processTypingData() {
-            // Calculate typing metrics
-            const elapsedTime = (typingData.endTime - typingData.startTime) / 1000;
-            const wordCount = REFERENCE_SENTENCE.split(' ').length;
-            const wpm = (wordCount / elapsedTime) * 60;
-            
-            // Calculate accuracy
-            let correctChars = 0;
-            const inputText = typingInput.value;
-            for (let i = 0; i < Math.min(REFERENCE_SENTENCE.length, inputText.length); i++) {
-                if (REFERENCE_SENTENCE[i] === inputText[i]) correctChars++;
-            }
-            const accuracy = (correctChars / REFERENCE_SENTENCE.length) * 100;
-            
-            // Calculate dwell time variance
-            let downEvents = typingData.keyEvents.filter(e => e.type === 'down');
-            let dwellTimes = [];
-            
-            for (let downEvent of downEvents) {
-                const key = downEvent.key;
-                const upEvent = typingData.keyEvents.find(e => 
-                    e.type === 'up' && e.key === key && e.time > downEvent.time
-                );
-                
-                if (upEvent) {
-                    dwellTimes.push(upEvent.time - downEvent.time);
-                }
-            }
-            
-            // Calculate variance
-            const avgDwell = dwellTimes.reduce((sum, t) => sum + t, 0) / dwellTimes.length;
-            const variance = dwellTimes.reduce((sum, t) => sum + Math.pow(t - avgDwell, 2), 0) / dwellTimes.length;
-            
-            // Confidence score
-            const confidence = Math.min(100, 70 + (accuracy / 3) + (wpm / 2) - (variance / 10));
-            
-            // Create signature
-            typingData.signature = {
-                wpm,
-                accuracy,
-                dwellVariance: variance,
-                confidence,
-                eventCount: typingData.keyEvents.length
-            };
-            
-            updateTypingStats(wpm, accuracy, variance, confidence);
-            addAuditLog("Typing captured", "success");
-        }
-        
-        // Pointer capture (touch/mouse)
-        function startPointerCapture() {
-            // Reset pointer data
-            pointerData = {
-                startTime: 0,
-                movements: [],
-                signature: null,
-                timer: null,
-                isActive: true
-            };
-            
-            // Clear canvas
-            canvasContext.clearRect(0, 0, pointerCanvas.width, pointerCanvas.height);
-            canvasContext.strokeStyle = '#00d2ff';
-            canvasContext.lineWidth = 3;
-            canvasContext.lineCap = 'round';
-            
-            // Set up pointer area
-            pointerArea.classList.add('active');
-            pointerTimer.textContent = 'READY';
-            pointerProgress.style.width = '0%';
-            updatePointerStats(0, 0, 0, 0);
-            
-            // Start countdown after a brief pause
-            setTimeout(() => {
-                if (!pointerData.isActive) return;
-                
-                let timeLeft = POINTER_DURATION;
-                pointerTimer.textContent = timeLeft.toFixed(1);
-                pointerProgress.style.width = '0%';
-                
-                pointerData.startTime = Date.now();
-                
-                pointerData.timer = setInterval(() => {
-                    timeLeft -= 0.1;
-                    pointerTimer.textContent = timeLeft.toFixed(1);
-                    
-                    // Update progress bar
-                    const progress = 100 - (timeLeft / POINTER_DURATION * 100);
-                    pointerProgress.style.width = progress + '%';
-                    
-                    if (timeLeft <= 0) {
-                        clearInterval(pointerData.timer);
-                        finishPointerCapture();
-                    }
-                }, 100);
-                
-                addAuditLog("Pointer capture started", "success");
-            }, 500);
-        }
-        
-        function handleTouchStart(e) {
-            if (!pointerData.isActive) return;
-            e.preventDefault();
-            const touch = e.touches[0];
-            const rect = pointerArea.getBoundingClientRect();
-            const x = touch.clientX - rect.left;
-            const y = touch.clientY - rect.top;
-            
-            pointerData.movements = [{x, y, time: Date.now()}];
-            canvasContext.beginPath();
-            canvasContext.moveTo(x, y);
-        }
-        
-        function handleTouchMove(e) {
-            if (!pointerData.isActive || pointerData.movements.length === 0) return;
-            e.preventDefault();
-            const touch = e.touches[0];
-            const rect = pointerArea.getBoundingClientRect();
-            const x = touch.clientX - rect.left;
-            const y = touch.clientY - rect.top;
-            const time = Date.now();
-            
-            pointerData.movements.push({x, y, time});
-            canvasContext.lineTo(x, y);
-            canvasContext.stroke();
-            
-            processPointerData();
-        }
-        
-        function handleTouchEnd() {
-            if (pointerData.isActive && pointerData.movements.length > 0) {
-                processPointerData();
-            }
-        }
-        
-        function handleMouseDown(e) {
-            if (!pointerData.isActive) return;
-            const rect = pointerArea.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            pointerData.movements = [{x, y, time: Date.now()}];
-            canvasContext.beginPath();
-            canvasContext.moveTo(x, y);
-        }
-        
-        function handleMouseMove(e) {
-            if (!pointerData.isActive || pointerData.movements.length === 0) return;
-            const rect = pointerArea.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const time = Date.now();
-            
-            pointerData.movements.push({x, y, time});
-            canvasContext.lineTo(x, y);
-            canvasContext.stroke();
-            
-            processPointerData();
-        }
-        
-        function handleMouseUp() {
-            if (pointerData.isActive && pointerData.movements.length > 0) {
-                processPointerData();
-            }
-        }
-        
-        function processPointerData() {
-            if (pointerData.movements.length < 2) return;
-            
-            // Calculate distance
-            let totalDistance = 0;
-            let speeds = [];
-            let directionChanges = 0;
-            
-            for (let i = 1; i < pointerData.movements.length; i++) {
-                const prev = pointerData.movements[i-1];
-                const curr = pointerData.movements[i];
-                
-                // Calculate distance
-                const dx = curr.x - prev.x;
-                const dy = curr.y - prev.y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                totalDistance += dist;
-                
-                // Calculate speed
-                const timeDiff = (curr.time - prev.time) / 1000;
-                const speed = dist / timeDiff;
-                speeds.push(speed);
-                
-                // Calculate direction changes
-                if (i > 1) {
-                    const prevDx = prev.x - pointerData.movements[i-2].x;
-                    const prevDy = prev.y - pointerData.movements[i-2].y;
-                    
-                    const dotProduct = dx*prevDx + dy*prevDy;
-                    const mag1 = Math.sqrt(dx*dx + dy*dy);
-                    const mag2 = Math.sqrt(prevDx*prevDx + prevDy*prevDy);
-                    
-                    if (mag1 > 0 && mag2 > 0) {
-                        const angle = Math.acos(dotProduct / (mag1 * mag2)) * (180 / Math.PI);
-                        if (angle > 30) {
-                            directionChanges++;
-                        }
-                    }
-                }
-            }
-            
-            // Calculate average speed
-            const avgSpeed = speeds.length > 0 ? 
-                speeds.reduce((sum, s) => sum + s, 0) / speeds.length : 0;
-            
-            // Calculate complexity
-            const complexityScore = Math.min(100, (directionChanges * 2) + (totalDistance / 20));
-            
-            // Update UI
-            updatePointerStats(totalDistance, avgSpeed, directionChanges, complexityScore);
-        }
-        
-        function updatePointerStats(dist, spd, chg, comp) {
-            distance.textContent = Math.round(dist);
-            speed.textContent = spd.toFixed(1);
-            changes.textContent = chg;
-            complexity.textContent = comp.toFixed(0);
-        }
-        
-        function finishPointerCapture() {
-            pointerData.isActive = false;
-            pointerArea.classList.remove('active');
-            processPointerData();
-            
-            // Create signature
-            pointerData.signature = {
-                totalDistance: distance.textContent,
-                avgSpeed: speed.textContent,
-                directionChanges: changes.textContent,
-                complexity: complexity.textContent,
-                movementCount: pointerData.movements.length
-            };
-            
-            addAuditLog("Pointer capture completed", "success");
-            
-            // Authenticate
-            authenticate();
-        }
-        
-        // Profile management
-        function encryptData(data) {
-            // Simulate encryption with cryptographic hashing
-            let hash = 0;
-            const str = JSON.stringify(data);
-            
-            for (let i = 0; i < str.length; i++) {
-                hash = ((hash << 5) - hash) + str.charCodeAt(i);
-                hash |= 0;
-            }
-            
-            return {
-                data: btoa(JSON.stringify(data)),
-                hash: hash
-            };
-        }
-        
-        function decryptData(encrypted) {
-            try {
-                const decrypted = JSON.parse(atob(encrypted.data));
-                
-                // Verify hash
-                let hash = 0;
-                const str = JSON.stringify(decrypted);
-                
-                for (let i = 0; i < str.length; i++) {
-                    hash = ((hash << 5) - hash) + str.charCodeAt(i);
-                    hash |= 0;
-                }
-                
-                if (hash !== encrypted.hash) {
-                    addAuditLog("Tamper detected: Hash mismatch", "error");
-                    return null;
-                }
-                
-                return decrypted;
-            } catch (e) {
-                addAuditLog("Decryption failed", "error");
-                return null;
-            }
-        }
-        
-        function saveProfile() {
-            const profile = {
-                typing: typingData.signature,
-                pointer: pointerData.signature,
-                timestamp: Date.now(),
-                deviceType: isMobile ? "mobile" : "desktop"
-            };
-            
-            const encrypted = encryptData(profile);
-            localStorage.setItem('flowid_profile', JSON.stringify(encrypted));
-            
-            addAuditLog("Profile encrypted and saved", "success");
-        }
-        
-        function getProfile() {
-            const encrypted = localStorage.getItem('flowid_profile');
-            if (!encrypted) return null;
-            
-            try {
-                const parsed = JSON.parse(encrypted);
-                const profile = decryptData(parsed);
-                return profile;
-            } catch (e) {
-                addAuditLog("Profile retrieval failed", "error");
-                return null;
-            }
-        }
-        
-        function resetProfile() {
-            localStorage.removeItem('flowid_profile');
-            resultMessage.innerHTML = '<i class="fas fa-check-circle"></i> Profile reset';
-            resultMessage.className = "result-container success";
-            addAuditLog("Profile reset", "warning");
-            
-            // Show result card temporarily
-            setTimeout(() => {
-                resetFlow();
-            }, 2000);
-        }
-        
-        function resetFlow() {
-            showCard(authCard);
-            typingInput.value = '';
-            pointerProgress.style.width = '0%';
-            progressBar.style.width = '0%';
-        }
-        
-        function lockSession() {
-            showCard(authCard);
-            addAuditLog("Session locked", "success");
-        }
-        
-        function showCard(card) {
-            authCard.classList.add('hidden');
-            pointerCard.classList.add('hidden');
-            resultCard.classList.add('hidden');
-            card.classList.remove('hidden');
-        }
-        
-        // Authentication
-        function authenticate() {
-            const startTime = Date.now();
-            const savedProfile = getProfile();
-            
-            if (!savedProfile) {
-                resultMessage.innerHTML = '<i class="fas fa-exclamation-triangle"></i> No profile found';
-                resultMessage.className = "result-container error";
-                addAuditLog("Authentication failed: No profile", "error");
-                showCard(resultCard);
-                return;
-            }
-            
-            // Calculate match scores
-            const typingMatch = calculateTypingMatch(savedProfile.typing, typingData.signature);
-            const pointerMatch = calculatePointerMatch(savedProfile.pointer, pointerData.signature);
-            
-            // Weighted overall score
-            const overallMatch = Math.round((typingMatch * 0.6) + (pointerMatch * 0.4));
-            
-            // Calculate response time
-            const responseTimeMs = Date.now() - startTime;
-            
-            // Update UI
-            typingScore.textContent = typingMatch + '%';
-            pointerScore.textContent = pointerMatch + '%';
-            overallScore.textContent = overallMatch + '%';
-            responseTime.textContent = responseTimeMs + 'ms';
-            
-            // Animate progress bar
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 2;
-                progressBar.style.width = Math.min(progress, overallMatch) + '%';
-                
-                if (progress >= overallMatch) {
-                    clearInterval(interval);
-                    
-                    // Show result
-                    if (overallMatch >= MATCH_THRESHOLD) {
-                        resultMessage.innerHTML = '<i class="fas fa-check-circle"></i> ✔ Access Granted';
-                        resultMessage.className = "result-container success";
-                        addAuditLog("Authentication successful", "success");
-                    } else {
-                        resultMessage.innerHTML = '<i class="fas fa-exclamation-circle"></i> ✖ Access Denied';
-                        resultMessage.className = "result-container error";
-                        addAuditLog("Authentication failed", "error");
-                    }
-                }
-            }, 20);
-            
-            showCard(resultCard);
-        }
-        
-        function calculateTypingMatch(saved, current) {
-            // Calculate differences
-            const wpmDiff = Math.abs(saved.wpm - current.wpm);
-            const wpmScore = Math.max(0, 100 - (wpmDiff * 2));
-            
-            const accuracyDiff = Math.abs(saved.accuracy - current.accuracy);
-            const accuracyScore = Math.max(0, 100 - accuracyDiff);
-            
-            const varianceDiff = Math.abs(saved.dwellVariance - current.dwellVariance);
-            const varianceScore = varianceDiff > 50 ? 50 : Math.max(0, 100 - (varianceDiff * 0.5));
-            
-            return Math.round((wpmScore + accuracyScore + varianceScore) / 3);
-        }
-        
-        function calculatePointerMatch(saved, current) {
-            // Calculate differences
-            const distDiff = Math.abs(saved.totalDistance - current.totalDistance);
-            const distScore = Math.max(0, 100 - (distDiff / 100));
-            
-            const speedDiff = Math.abs(saved.avgSpeed - current.avgSpeed);
-            const speedScore = Math.max(0, 100 - (speedDiff * 0.5));
-            
-            const changeDiff = Math.abs(saved.directionChanges - current.directionChanges);
-            const changeScore = Math.max(0, 100 - (changeDiff * 2));
-            
-            return Math.round((distScore + speedScore + changeScore) / 3);
-        }
-        
-        function addAuditLog(message, type = "info") {
-            const now = new Date();
-            const timeString = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
-            
-            const logEntry = document.createElement('div');
-            logEntry.className = 'log-entry';
-            logEntry.innerHTML = `
-                <span class="log-time">${timeString}</span>
-                <span class="log-message ${type}">${message}</span>
-            `;
-            
-            auditLogEntries.prepend(logEntry);
-            
-            // Keep only the last 5 entries
-            if (auditLogEntries.children.length > 5) {
-                auditLogEntries.removeChild(auditLogEntries.lastChild);
-            }
-            
-            // Auto-scroll to top
-            auditLogEntries.scrollTop = 0;
-        }
-        
-        // Initialize the app
-        window.addEventListener('load', init);
+        updateUI();
     </script>
 </body>
 </html>
