@@ -3,36 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FocusFlow | NeuroAdaptTech MVP</title>
+    <title>FocusFlow | NeuroAdaptTech</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --focus-bg: #0a192f;
-            --distracted-bg: #2a0a46;
-            --primary: #00c6ff;
-            --secondary: #0072ff;
-            --success: #00d26a;
-            --warning: #ffb400;
-            --danger: #ff4d6d;
-            --dark: #121826;
-            --light: #f0f7ff;
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f1f5f9;
+            --card-bg: rgba(15, 23, 42, 0.8);
+            --card-border: rgba(148, 163, 184, 0.1);
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, var(--focus-bg) 0%, var(--dark) 100%);
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
             color: var(--light);
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
             transition: background 1s ease;
         }
         
@@ -41,172 +45,213 @@
             margin: 0 auto;
         }
         
+        /* Header */
         header {
             text-align: center;
             padding: 20px 0 40px;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
         }
         
         h1 {
             font-size: 2.8rem;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary-light), var(--accent));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            display: inline-block;
+            line-height: 1.2;
         }
         
         .tagline {
             font-size: 1.2rem;
-            opacity: 0.8;
             max-width: 600px;
-            margin: 0 auto;
+            margin: 15px auto 0;
+            opacity: 0.9;
+            line-height: 1.6;
         }
         
+        /* Dashboard Grid */
         .dashboard {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
             margin-bottom: 30px;
         }
         
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--card-border);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
         
         .card-title {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-size: 1.4rem;
-            margin-bottom: 20px;
-            color: var(--primary);
+            margin-bottom: 25px;
+            color: var(--primary-light);
+        }
+        
+        .card-title i {
+            background: rgba(37, 99, 235, 0.15);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Focus Meter */
+        .focus-meter-container {
+            margin: 30px 0;
+        }
+        
+        .focus-meter-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
         
         .focus-meter {
-            height: 40px;
+            height: 24px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            margin: 30px 0;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
             overflow: hidden;
             position: relative;
         }
         
         .focus-level {
             height: 100%;
-            width: 70%;
-            background: linear-gradient(90deg, var(--success), var(--primary));
-            border-radius: 20px;
+            width: 78%;
+            background: linear-gradient(90deg, var(--success), var(--accent));
+            border-radius: 12px;
             transition: width 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
             display: flex;
             align-items: center;
             justify-content: flex-end;
             padding-right: 15px;
             font-weight: bold;
-            color: var(--dark);
+            color: var(--darker);
+            font-size: 0.85rem;
         }
         
-        .focus-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            opacity: 0.7;
-            margin-top: 10px;
-        }
-        
+        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 25px;
         }
         
         .stat-card {
-            background: rgba(255, 255, 255, 0.07);
-            border-radius: 12px;
-            padding: 15px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            padding: 18px 12px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .stat-value {
             font-size: 1.8rem;
-            font-weight: bold;
+            font-weight: 700;
             margin: 10px 0;
-            color: var(--primary);
+            color: var(--primary-light);
         }
         
         .stat-label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             opacity: 0.7;
         }
         
+        /* Work Area */
         .work-area {
-            margin-top: 30px;
+            margin-top: 25px;
         }
         
         textarea {
             width: 100%;
             height: 180px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(2, 6, 23, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 15px;
-            color: white;
+            border-radius: 16px;
+            padding: 20px;
+            color: var(--light);
             font-size: 1rem;
             resize: none;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
         }
         
         textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(0, 198, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
         }
         
         .distracted textarea {
-            opacity: 0.5;
-            filter: blur(1px);
+            opacity: 0.4;
+            filter: blur(2px);
         }
         
+        /* Controls */
         .controls {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 15px;
             margin-top: 25px;
-            flex-wrap: wrap;
         }
         
         button {
-            flex: 1;
-            min-width: 150px;
-            padding: 14px 20px;
+            padding: 16px 20px;
             border: none;
-            border-radius: 10px;
-            background: rgba(0, 198, 255, 0.15);
-            color: var(--primary);
-            font-weight: bold;
+            border-radius: 14px;
+            background: rgba(37, 99, 235, 0.15);
+            color: var(--primary-light);
+            font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
         }
         
         button:hover {
-            background: rgba(0, 198, 255, 0.25);
+            background: rgba(37, 99, 235, 0.25);
             transform: translateY(-2px);
         }
         
@@ -215,32 +260,36 @@
             color: white;
         }
         
+        /* Camera Feed */
         .camera-feed {
             position: relative;
             margin-top: 20px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--darker);
+            border: 1px solid var(--card-border);
         }
         
         video, canvas {
             width: 100%;
-            max-width: 400px;
-            border-radius: 12px;
             display: block;
-            margin: 0 auto;
         }
         
+        /* Notification */
         .notification {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 25px;
+            right: 25px;
             background: var(--dark);
             border-left: 4px solid var(--warning);
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 18px 22px;
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
             transform: translateX(120%);
             transition: transform 0.4s ease;
             max-width: 350px;
             z-index: 1000;
+            backdrop-filter: blur(10px);
         }
         
         .notification.show {
@@ -252,73 +301,264 @@
             margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-size: 1.1rem;
         }
         
+        /* Chart */
         .chart-container {
             height: 250px;
             margin-top: 20px;
         }
         
-        .loading {
+        /* Onboarding */
+        .onboarding {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.95);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
             text-align: center;
-            padding: 40px 0;
         }
         
-        .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid var(--primary);
+        .onboarding-content {
+            max-width: 600px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+        
+        .onboarding h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: var(--primary-light);
+        }
+        
+        .onboarding p {
+            margin: 15px 0;
+            line-height: 1.7;
+            opacity: 0.9;
+        }
+        
+        .onboarding-steps {
+            text-align: left;
+            margin: 25px 0;
+        }
+        
+        .onboarding-step {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+        
+        .step-icon {
+            background: rgba(37, 99, 235, 0.15);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .tagline {
+                font-size: 1rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .card-title {
+                font-size: 1.2rem;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .onboarding-content {
+                padding: 25px;
+            }
+            
+            .onboarding h2 {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .logo-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px 0 20px;
+            font-size: 0.9rem;
+            opacity: 0.6;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .privacy-note {
+            max-width: 600px;
+            margin: 15px auto 0;
+            font-size: 0.85rem;
+            background: rgba(37, 99, 235, 0.1);
+            padding: 12px;
+            border-radius: 12px;
+        }
+        
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.8);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--primary-light);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin-bottom: 20px;
         }
         
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        .instructions {
-            margin-top: 15px;
-            font-size: 0.9rem;
-            opacity: 0.7;
-            line-height: 1.6;
-        }
-        
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px 0;
-            font-size: 0.9rem;
-            opacity: 0.6;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading">
+        <div class="loader"></div>
+        <p>Loading NeuroAdaptTech engine...</p>
+    </div>
+    
+    <!-- Onboarding Modal -->
+    <div class="onboarding" id="onboarding">
+        <div class="onboarding-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h1>FocusFlow</h1>
+            </div>
+            <h2>Welcome to NeuroAdaptTech</h2>
+            <p>The next generation of cognitive-adaptive interfaces that respond to your focus in real-time</p>
+            
+            <div class="onboarding-steps">
+                <div class="onboarding-step">
+                    <div class="step-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div>
+                        <h3>Camera Access</h3>
+                        <p>Allow camera access for cognitive analysis. We process everything locally - your data never leaves your device.</p>
+                    </div>
+                </div>
+                
+                <div class="onboarding-step">
+                    <div class="step-icon">
+                        <i class="fas fa-gauge-high"></i>
+                    </div>
+                    <div>
+                        <h3>Focus Tracking</h3>
+                        <p>Work naturally while we monitor your attention patterns using computer vision and AI.</p>
+                    </div>
+                </div>
+                
+                <div class="onboarding-step">
+                    <div class="step-icon">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                    </div>
+                    <div>
+                        <h3>Adaptive Interface</h3>
+                        <p>Experience an interface that adapts to your cognitive state in real-time to enhance productivity.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="start-btn" class="primary" style="width: 100%; padding: 18px; margin-top: 20px;">
+                <i class="fas fa-play"></i> Start Cognitive Enhancement
+            </button>
+            
+            <p class="privacy-note" style="margin-top: 20px;">
+                <i class="fas fa-shield-alt"></i> Privacy First: All processing happens locally on your device. No data is collected or sent to any servers.
+            </p>
+        </div>
+    </div>
+    
+    <!-- Main App -->
+    <div class="container" id="app" style="display: none;">
         <header>
-            <h1><i class="fas fa-brain"></i> FocusFlow</h1>
-            <p class="tagline">NeuroAdaptTech that dynamically adapts to your cognitive state in real-time</p>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h1>FocusFlow</h1>
+            </div>
+            <p class="tagline">NeuroAdaptTech that dynamically adapts to your cognitive state to maximize productivity</p>
         </header>
         
         <div class="notification" id="notification">
-            <h3><i class="fas fa-exclamation-triangle"></i> Attention Needed</h3>
-            <p>You've been distracted multiple times. Consider taking a short break to recharge.</p>
+            <h3><i class="fas fa-lightbulb"></i> Cognitive Break Recommended</h3>
+            <p>You've been distracted multiple times. Consider a 2-minute break to recharge.</p>
         </div>
         
         <div class="dashboard">
             <div class="card">
-                <h2 class="card-title"><i class="fas fa-gauge-high"></i> Focus Dashboard</h2>
+                <h2 class="card-title"><i class="fas fa-gauge-high"></i> Cognitive Dashboard</h2>
                 
-                <div class="focus-meter">
-                    <div class="focus-level" id="focus-level">78%</div>
-                </div>
-                <div class="focus-labels">
-                    <span>Distracted</span>
-                    <span>Focused</span>
+                <div class="focus-meter-container">
+                    <div class="focus-meter-labels">
+                        <span>Distracted</span>
+                        <span>Focused</span>
+                    </div>
+                    <div class="focus-meter">
+                        <div class="focus-level" id="focus-level">78%</div>
+                    </div>
                 </div>
                 
                 <div class="stats-grid">
@@ -333,6 +573,10 @@
                     <div class="stat-card">
                         <div class="stat-label">Productivity</div>
                         <div class="stat-value" id="productivity">87%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Sessions</div>
+                        <div class="stat-value" id="sessions">5</div>
                     </div>
                 </div>
                 
@@ -349,8 +593,23 @@
                     <canvas id="output" width="640" height="480"></canvas>
                 </div>
                 
-                <div class="instructions">
-                    <p><i class="fas fa-info-circle"></i> Keep your face visible to the camera. The system analyzes your eye movements and facial orientation to detect focus levels.</p>
+                <p style="margin-top: 20px; opacity: 0.8; font-size: 0.95rem;">
+                    <i class="fas fa-info-circle"></i> Keep your face visible. We're analyzing attention through:
+                </p>
+                
+                <div class="stats-grid" style="margin-top: 15px;">
+                    <div class="stat-card">
+                        <div class="stat-label">Eye Movement</div>
+                        <div class="stat-value" id="eye-metric">92%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Head Position</div>
+                        <div class="stat-value" id="head-metric">86%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Engagement</div>
+                        <div class="stat-value" id="engagement">79%</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -358,56 +617,76 @@
         <div class="card work-area">
             <h2 class="card-title"><i class="fas fa-keyboard"></i> Adaptive Workspace</h2>
             
-            <textarea id="work-textarea" placeholder="Start typing here... NeuroAdaptTech will monitor your cognitive engagement and adapt the interface accordingly. Try looking away from the screen to see the adaptation in action."></textarea>
+            <textarea id="work-textarea" placeholder="Start typing here... NeuroAdaptTech will monitor your cognitive engagement and adapt the interface to help maintain your focus flow. Try looking away from the screen to see the adaptation in action."></textarea>
             
             <div class="controls">
-                <button id="start-btn" class="primary">
-                    <i class="fas fa-play"></i> Start Analysis
-                </button>
                 <button id="calibrate-btn">
                     <i class="fas fa-sliders"></i> Calibrate
                 </button>
+                <button id="pause-btn">
+                    <i class="fas fa-pause"></i> Pause
+                </button>
                 <button id="reset-btn">
                     <i class="fas fa-rotate"></i> Reset Session
+                </button>
+                <button id="insights-btn">
+                    <i class="fas fa-chart-line"></i> Insights
                 </button>
             </div>
         </div>
         
         <div class="footer">
             <p>NeuroAdaptTech MVP | Pioneering the Future of Cognitive Interfaces</p>
-            <p>FocusFlow utilizes TensorFlow.js and BlazeFace for real-time cognitive analysis</p>
+            <p class="privacy-note">
+                <i class="fas fa-lock"></i> Privacy First: All processing happens locally on your device. No data is collected or sent to any servers.
+            </p>
         </div>
     </div>
 
     <script>
-        // State variables
-        let focusScore = 78;
-        let distractionCount = 3;
-        let focusStartTime = Date.now();
-        let lastKeystrokeTime = 0;
-        let lastFaceDetectionTime = 0;
-        let distractionStartTime = 0;
-        let isCalibrating = false;
-        let isActive = false;
-        let faceDetectionCount = 0;
-        let calibrationData = { eyePositions: [] };
-        let focusHistory = [];
+        // State Management
+        const state = {
+            focusScore: 78,
+            distractionCount: 3,
+            focusStartTime: Date.now(),
+            lastKeystrokeTime: 0,
+            lastFaceDetectionTime: 0,
+            distractionStartTime: 0,
+            isCalibrating: false,
+            isActive: false,
+            faceDetectionCount: 0,
+            calibrationData: { eyePositions: [] },
+            focusHistory: [],
+            sessionCount: 5,
+            eyeMetric: 92,
+            headMetric: 86,
+            engagement: 79
+        };
         
         // DOM Elements
-        const focusLevel = document.getElementById('focus-level');
-        const distractionCountEl = document.getElementById('distraction-count');
-        const focusTimeEl = document.getElementById('focus-time');
-        const productivityEl = document.getElementById('productivity');
-        const workTextarea = document.getElementById('work-textarea');
-        const webcam = document.getElementById('webcam');
-        const canvas = document.getElementById('output');
-        const ctx = canvas.getContext('2d');
-        const notification = document.getElementById('notification');
-        const startBtn = document.getElementById('start-btn');
-        const calibrateBtn = document.getElementById('calibrate-btn');
-        const resetBtn = document.getElementById('reset-btn');
+        const dom = {
+            focusLevel: document.getElementById('focus-level'),
+            distractionCountEl: document.getElementById('distraction-count'),
+            focusTimeEl: document.getElementById('focus-time'),
+            productivityEl: document.getElementById('productivity'),
+            sessionsEl: document.getElementById('sessions'),
+            workTextarea: document.getElementById('work-textarea'),
+            webcam: document.getElementById('webcam'),
+            canvas: document.getElementById('output'),
+            notification: document.getElementById('notification'),
+            calibrateBtn: document.getElementById('calibrate-btn'),
+            pauseBtn: document.getElementById('pause-btn'),
+            resetBtn: document.getElementById('reset-btn'),
+            insightsBtn: document.getElementById('insights-btn'),
+            eyeMetricEl: document.getElementById('eye-metric'),
+            headMetricEl: document.getElementById('head-metric'),
+            engagementEl: document.getElementById('engagement'),
+            app: document.getElementById('app'),
+            onboarding: document.getElementById('onboarding'),
+            loading: document.getElementById('loading')
+        };
         
-        // Focus Chart
+        // Initialize Chart
         const focusChart = new Chart(document.getElementById('focus-chart'), {
             type: 'line',
             data: {
@@ -415,9 +694,9 @@
                 datasets: [{
                     label: 'Focus Level',
                     data: Array(20).fill(75),
-                    borderColor: '#00c6ff',
-                    backgroundColor: 'rgba(0, 198, 255, 0.1)',
-                    borderWidth: 2,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 3,
                     pointRadius: 0,
                     tension: 0.4,
                     fill: true
@@ -427,13 +706,19 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `Focus: ${Math.round(context.parsed.y)}%`
+                        }
+                    }
                 },
                 scales: {
                     y: {
                         min: 0,
                         max: 100,
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'rgba(255, 255, 255, 0.6)' }
                     },
                     x: { display: false }
                 }
@@ -441,14 +726,18 @@
         });
         
         // Initialize TensorFlow.js model
-        let model;
+        let faceModel;
         async function initModel() {
             try {
-                model = await blazeface.load();
-                console.log("Model loaded successfully");
+                faceModel = await blazeface.load();
+                console.log("NeuroAdapt model loaded successfully");
+                setTimeout(() => {
+                    dom.loading.style.display = 'none';
+                    dom.onboarding.style.display = 'flex';
+                }, 1500);
             } catch (err) {
                 console.error("Error loading model:", err);
-                alert("Error loading face detection model. Please check console for details.");
+                alert("Error loading cognitive analysis model. Please check console for details.");
             }
         }
         
@@ -456,11 +745,12 @@
         async function setupWebcam() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: "user" } 
+                    video: { facingMode: "user", width: 640, height: 480 } 
                 });
-                webcam.srcObject = stream;
+                dom.webcam.srcObject = stream;
+                
                 return new Promise((resolve) => {
-                    webcam.onloadedmetadata = () => {
+                    dom.webcam.onloadedmetadata = () => {
                         resolve();
                     };
                 });
@@ -470,57 +760,73 @@
             }
         }
         
-        // Detect face and estimate focus
-        async function detectFocus() {
-            if (!model || !isActive) return;
+        // Detect cognitive state
+        async function detectCognitiveState() {
+            if (!faceModel || !state.isActive) return;
             
             try {
-                const predictions = await model.estimateFaces(webcam, false);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const predictions = await faceModel.estimateFaces(dom.webcam, false);
+                const ctx = dom.canvas.getContext('2d');
+                ctx.clearRect(0, 0, dom.canvas.width, dom.canvas.height);
                 
                 if (predictions.length > 0) {
                     const face = predictions[0];
-                    drawFace(face);
+                    drawFace(face, ctx);
                     
-                    // Calculate focus metrics
+                    // Calculate cognitive metrics
                     const eyeDistance = calculateEyeDistance(face.landmarks);
                     const isFacingScreen = checkFacingScreen(face);
                     
-                    // Update focus score based on metrics
+                    // Update metrics display
+                    state.eyeMetric = Math.min(100, Math.max(70, state.eyeMetric + (isFacingScreen ? 1 : -3)));
+                    state.headMetric = Math.min(100, Math.max(70, state.headMetric + (isFacingScreen ? 1 : -2)));
+                    state.engagement = Math.min(100, Math.max(60, Math.floor((state.eyeMetric + state.headMetric) / 2)));
+                    
+                    dom.eyeMetricEl.textContent = `${state.eyeMetric}%`;
+                    dom.headMetricEl.textContent = `${state.headMetric}%`;
+                    dom.engagementEl.textContent = `${state.engagement}%`;
+                    
+                    // Update focus score
                     updateFocusScore(isFacingScreen, eyeDistance);
-                    lastFaceDetectionTime = Date.now();
-                    faceDetectionCount++;
+                    state.lastFaceDetectionTime = Date.now();
+                    state.faceDetectionCount++;
                 } else {
                     // No face detected - likely distracted
-                    if (Date.now() - lastFaceDetectionTime > 3000) {
+                    if (Date.now() - state.lastFaceDetectionTime > 3000) {
                         updateFocusScore(false, 0);
                     }
                 }
             } catch (err) {
-                console.error("Face detection error:", err);
+                console.error("Cognitive analysis error:", err);
             }
             
-            requestAnimationFrame(detectFocus);
+            requestAnimationFrame(detectCognitiveState);
         }
         
-        // Draw face landmarks on canvas
-        function drawFace(face) {
+        // Draw face landmarks
+        function drawFace(face, ctx) {
             // Draw bounding box
             const box = face.topLeft.concat(face.bottomRight);
-            ctx.strokeStyle = '#00c6ff';
+            ctx.strokeStyle = '#3b82f6';
             ctx.lineWidth = 2;
             ctx.strokeRect(box[0], box[1], box[2] - box[0], box[3] - box[1]);
             
             // Draw landmarks
-            ctx.fillStyle = '#ff4d6d';
+            ctx.fillStyle = '#06b6d4';
             face.landmarks.forEach(point => {
                 ctx.beginPath();
                 ctx.arc(point[0], point[1], 4, 0, 2 * Math.PI);
                 ctx.fill();
             });
+            
+            // Draw attention indicator
+            ctx.fillStyle = state.focusScore > 65 ? '#10b981' : '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(dom.canvas.width - 30, 30, 10, 0, 2 * Math.PI);
+            ctx.fill();
         }
         
-        // Calculate eye distance (simplified focus metric)
+        // Calculate eye distance
         function calculateEyeDistance(landmarks) {
             const leftEye = landmarks[0];
             const rightEye = landmarks[1];
@@ -540,19 +846,19 @@
             return nose[0] > minX && nose[0] < maxX;
         }
         
-        // Update focus score based on face detection
+        // Update focus score
         function updateFocusScore(isFacingScreen, eyeDistance) {
-            if (isCalibrating) return;
+            if (state.isCalibrating) return;
             
             const now = Date.now();
-            const timeSinceLastKeystroke = lastKeystrokeTime ? now - lastKeystrokeTime : 0;
+            const timeSinceLastKeystroke = state.lastKeystrokeTime ? now - state.lastKeystrokeTime : 0;
             
             // Base score adjustment
             let adjustment = 0;
             
             if (isFacingScreen) {
                 adjustment += 1.5;
-                distractionStartTime = 0;
+                state.distractionStartTime = 0;
                 
                 // Reward active typing
                 if (timeSinceLastKeystroke < 2000) {
@@ -562,9 +868,9 @@
                 adjustment -= 2;
                 
                 // Start distraction timer
-                if (!distractionStartTime) {
-                    distractionStartTime = now;
-                } else if (now - distractionStartTime > 5000) {
+                if (!state.distractionStartTime) {
+                    state.distractionStartTime = now;
+                } else if (now - state.distractionStartTime > 5000) {
                     adjustment -= 3;
                 }
             }
@@ -575,15 +881,15 @@
             }
             
             // Apply adjustment with smoothing
-            focusScore = Math.min(100, Math.max(20, focusScore + adjustment * 0.2));
+            state.focusScore = Math.min(100, Math.max(20, state.focusScore + adjustment * 0.2));
             
             // Check for significant distraction events
             if (adjustment < -1.5) {
-                distractionCount++;
-                distractionCountEl.textContent = distractionCount;
+                state.distractionCount++;
+                dom.distractionCountEl.textContent = state.distractionCount;
                 
                 // Show notification after multiple distractions
-                if (distractionCount >= 3 && distractionCount % 2 === 1) {
+                if (state.distractionCount >= 3 && state.distractionCount % 2 === 1) {
                     showNotification();
                 }
             }
@@ -591,125 +897,218 @@
             updateUI();
         }
         
-        // Track keystrokes for activity detection
+        // Track keystrokes
         function trackKeystrokes() {
             const now = Date.now();
             
             // Detect distraction patterns
-            if (lastKeystrokeTime && now - lastKeystrokeTime > 3000) {
+            if (state.lastKeystrokeTime && now - state.lastKeystrokeTime > 3000) {
                 // Penalize long pauses
-                focusScore = Math.max(20, focusScore - 3);
+                state.focusScore = Math.max(20, state.focusScore - 3);
                 updateUI();
             }
             
             // Reward active typing
-            focusScore = Math.min(100, focusScore + 0.5);
+            state.focusScore = Math.min(100, state.focusScore + 0.5);
             updateUI();
             
-            lastKeystrokeTime = now;
+            state.lastKeystrokeTime = now;
         }
         
-        // Update UI based on focus score
+        // Update UI
         function updateUI() {
             // Update focus meter
-            focusLevel.style.width = `${focusScore}%`;
-            focusLevel.textContent = `${Math.round(focusScore)}%`;
+            dom.focusLevel.style.width = `${state.focusScore}%`;
+            dom.focusLevel.textContent = `${Math.round(state.focusScore)}%`;
             
             // Update productivity metric
-            const productivity = Math.min(100, Math.max(20, focusScore - 5 + Math.random() * 10));
-            productivityEl.textContent = `${Math.round(productivity)}%`;
+            const productivity = Math.min(100, Math.max(20, state.focusScore - 5 + Math.random() * 10));
+            dom.productivityEl.textContent = `${Math.round(productivity)}%`;
             
             // Update focus time
-            const focusSeconds = Math.floor((Date.now() - focusStartTime) / 1000);
+            const focusSeconds = Math.floor((Date.now() - state.focusStartTime) / 1000);
             const minutes = Math.floor(focusSeconds / 60);
             const seconds = focusSeconds % 60;
-            focusTimeEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            dom.focusTimeEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update session count
+            dom.sessionsEl.textContent = state.sessionCount;
             
             // Adapt interface
-            document.body.className = focusScore > 65 ? '' : 'distracted';
+            document.body.className = state.focusScore > 65 ? '' : 'distracted';
             
             // Update chart
-            focusHistory.push(focusScore);
-            if (focusHistory.length > 20) focusHistory.shift();
-            focusChart.data.datasets[0].data = focusHistory;
+            state.focusHistory.push(state.focusScore);
+            if (state.focusHistory.length > 20) state.focusHistory.shift();
+            focusChart.data.datasets[0].data = state.focusHistory;
             focusChart.update();
         }
         
         // Show notification
         function showNotification() {
-            notification.classList.add('show');
+            dom.notification.classList.add('show');
             setTimeout(() => {
-                notification.classList.remove('show');
+                dom.notification.classList.remove('show');
             }, 5000);
         }
         
         // Calibration process
         function startCalibration() {
-            isCalibrating = true;
-            alert("Calibration started. Please look directly at the screen with a focused expression for 5 seconds.");
-            calibrationData = { eyePositions: [] };
+            state.isCalibrating = true;
             
-            setTimeout(() => {
-                isCalibrating = false;
-                alert("Calibration complete! NeuroAdaptTech is now optimized for your cognitive patterns.");
-            }, 5000);
+            // Create calibration modal
+            const calibrationModal = document.createElement('div');
+            calibrationModal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(2, 6, 23, 0.95);
+                z-index: 2000;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                padding: 20px;
+            `;
+            
+            calibrationModal.innerHTML = `
+                <div style="background: var(--card-bg); border-radius: 20px; padding: 40px; max-width: 500px;">
+                    <h2 style="font-size: 1.8rem; margin-bottom: 20px; color: var(--primary-light);">
+                        <i class="fas fa-sliders"></i> Cognitive Calibration
+                    </h2>
+                    <p style="margin-bottom: 30px; line-height: 1.7;">
+                        Please look directly at the screen with a focused expression for 5 seconds. 
+                        This helps NeuroAdaptTech optimize for your unique cognitive patterns.
+                    </p>
+                    <div style="font-size: 3rem; margin: 30px 0;">
+                        <i class="fas fa-user-clock"></i>
+                    </div>
+                    <div id="calibration-timer" style="font-size: 2.5rem; font-weight: bold; margin: 20px 0; color: var(--accent);">
+                        5s
+                    </div>
+                    <button id="cancel-calibration" style="padding: 14px 30px; background: rgba(239, 68, 68, 0.15); color: var(--danger); border: none; border-radius: 14px; font-weight: bold; cursor: pointer;">
+                        <i class="fas fa-times"></i> Cancel Calibration
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(calibrationModal);
+            
+            // Start countdown
+            let seconds = 5;
+            const timerEl = document.getElementById('calibration-timer');
+            const countdown = setInterval(() => {
+                seconds--;
+                timerEl.textContent = `${seconds}s`;
+                
+                if (seconds <= 0) {
+                    clearInterval(countdown);
+                    calibrationComplete();
+                }
+            }, 1000);
+            
+            // Cancel button
+            document.getElementById('cancel-calibration').addEventListener('click', () => {
+                clearInterval(countdown);
+                document.body.removeChild(calibrationModal);
+                state.isCalibrating = false;
+            });
+            
+            function calibrationComplete() {
+                document.body.removeChild(calibrationModal);
+                state.isCalibrating = false;
+                
+                // Show completion notification
+                const completeModal = document.createElement('div');
+                completeModal.style.cssText = calibrationModal.style.cssText;
+                completeModal.innerHTML = `
+                    <div style="background: var(--card-bg); border-radius: 20px; padding: 40px; max-width: 500px;">
+                        <h2 style="font-size: 1.8rem; margin-bottom: 20px; color: var(--success);">
+                            <i class="fas fa-check-circle"></i> Calibration Complete!
+                        </h2>
+                        <p style="margin-bottom: 30px; line-height: 1.7;">
+                            NeuroAdaptTech is now optimized for your cognitive patterns. 
+                            You should experience more accurate focus tracking.
+                        </p>
+                        <div style="font-size: 3rem; margin: 30px 0; color: var(--success);">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.remove()" style="padding: 14px 30px; background: rgba(16, 185, 129, 0.15); color: var(--success); border: none; border-radius: 14px; font-weight: bold; cursor: pointer;">
+                            <i class="fas fa-check"></i> Start Working
+                        </button>
+                    </div>
+                `;
+                
+                document.body.appendChild(completeModal);
+            }
         }
         
         // Reset session
         function resetSession() {
-            focusScore = 78;
-            distractionCount = 0;
-            focusStartTime = Date.now();
-            distractionCountEl.textContent = "0";
-            focusHistory = Array(20).fill(75);
-            focusChart.data.datasets[0].data = focusHistory;
+            state.focusScore = 78;
+            state.distractionCount = 0;
+            state.focusStartTime = Date.now();
+            dom.distractionCountEl.textContent = "0";
+            state.focusHistory = Array(20).fill(75);
+            focusChart.data.datasets[0].data = state.focusHistory;
             focusChart.update();
+            state.sessionCount++;
             updateUI();
         }
         
         // Start analysis
         async function startAnalysis() {
-            if (isActive) return;
+            dom.onboarding.style.display = 'none';
+            dom.app.style.display = 'block';
             
             try {
-                isActive = true;
-                startBtn.innerHTML = '<i class="fas fa-pause"></i> Pause Analysis';
-                startBtn.classList.remove('primary');
-                
+                state.isActive = true;
                 await setupWebcam();
-                await initModel();
-                detectFocus();
+                detectCognitiveState();
             } catch (err) {
                 console.error("Start analysis failed:", err);
-                isActive = false;
-                startBtn.innerHTML = '<i class="fas fa-play"></i> Start Analysis';
-                startBtn.classList.add('primary');
+                state.isActive = false;
             }
         }
         
-        // Pause analysis
-        function pauseAnalysis() {
-            isActive = false;
-            startBtn.innerHTML = '<i class="fas fa-play"></i> Resume Analysis';
-            startBtn.classList.add('primary');
+        // Toggle analysis
+        function toggleAnalysis() {
+            state.isActive = !state.isActive;
+            dom.pauseBtn.innerHTML = state.isActive ? 
+                '<i class="fas fa-pause"></i> Pause' : 
+                '<i class="fas fa-play"></i> Resume';
+                
+            if (state.isActive) {
+                detectCognitiveState();
+            }
         }
         
         // Event Listeners
-        workTextarea.addEventListener('keydown', trackKeystrokes);
-        
-        startBtn.addEventListener('click', () => {
-            if (isActive) {
-                pauseAnalysis();
-            } else {
-                startAnalysis();
-            }
-        });
-        
-        calibrateBtn.addEventListener('click', startCalibration);
-        resetBtn.addEventListener('click', resetSession);
+        dom.workTextarea.addEventListener('keydown', trackKeystrokes);
+        document.getElementById('start-btn').addEventListener('click', startAnalysis);
+        dom.calibrateBtn.addEventListener('click', startCalibration);
+        dom.resetBtn.addEventListener('click', resetSession);
+        dom.pauseBtn.addEventListener('click', toggleAnalysis);
         
         // Initialize
+        initModel();
         updateUI();
+        
+        // Simulate metrics for demo purposes
+        setInterval(() => {
+            if (state.isActive) {
+                state.eyeMetric = Math.min(100, Math.max(70, state.eyeMetric + (Math.random() - 0.5)));
+                state.headMetric = Math.min(100, Math.max(70, state.headMetric + (Math.random() - 0.5)));
+                state.engagement = Math.min(100, Math.max(60, Math.floor((state.eyeMetric + state.headMetric) / 2)));
+                
+                dom.eyeMetricEl.textContent = `${Math.round(state.eyeMetric)}%`;
+                dom.headMetricEl.textContent = `${Math.round(state.headMetric)}%`;
+                dom.engagementEl.textContent = `${Math.round(state.engagement)}%`;
+            }
+        }, 3000);
     </script>
 </body>
 </html>
